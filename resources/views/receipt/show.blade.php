@@ -3,11 +3,16 @@
 @section('content')
 
 <div class="container-fluid py-4 modern-bg">
-    {{-- HEADER --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-        <h3 class="m-0 font-weight-bold text-dark">
-            <i class="fas fa-receipt text-primary mr-2"></i> Penyerahan Souvenir
-        </h3>
+    {{-- HEADER (Sudah ditambahkan tombol kembali) --}}
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap">
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+            <a href="{{ route('events.index') }}" class="btn btn-secondary btn-sm mr-3">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <h3 class="m-0 font-weight-bold text-dark">
+                <i class="fas fa-receipt text-primary mr-2"></i> Penyerahan Souvenir
+            </h3>
+        </div>
         <span class="badge badge-primary px-4 py-2 badge-modern">
             {{ $event->name }}
         </span>

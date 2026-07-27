@@ -1,219 +1,123 @@
 @extends('layouts.app')
-
 @section('title', 'Master Event')
 
+<!-- Tambahkan CSS DataTables jika belum ada di template utama -->
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+@endpush
+
 @section('content')
-
 <div class="card">
-
+    <!-- Header Dirapihkan -->
     <div class="card-header d-flex justify-content-between align-items-center">
-
-        <h3 class="card-title">
-            <i class="fas fa-calendar-alt"></i>
-            Master Event
+        <h3 class="card-title mb-0 font-weight-bold">
+            <i class="fas fa-calendar-alt mr-2"></i> Master Event
         </h3>
-
-        <a href="{{ route('events.create') }}"
-           class="btn btn-primary">
-
-            <i class="fas fa-plus"></i>
-
-            Tambah Event
-
+        <a href="{{ route('events.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tambah Event
         </a>
-
     </div>
 
     <div class="card-body">
-
+        <!-- Alert Session -->
         @if(session('success'))
-
             <div class="alert alert-success alert-dismissible fade show">
-
-                <button
-                    type="button"
-                    class="close"
-                    data-dismiss="alert">
-
-                    &times;
-
-                </button>
-
-                <i class="fas fa-check-circle"></i>
-
-                {{ session('success') }}
-
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="fas fa-check-circle mr-1"></i> {{ session('success') }}
             </div>
-
         @endif
 
-        <table id="eventTable"
-               class="table table-bordered table-striped">
-
-            <thead>
-
-                <tr>
-
-                    <th width="120">Kode</th>
-
-                    <th>Nama Event</th>
-
-                    <th width="150">Tanggal</th>
-
-                    <th>Lokasi</th>
-
-                    <th width="220">Aksi</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-            @forelse($events as $event)
-
-                <tr>
-
-                    <td>{{ $event->code }}</td>
-
-                    <td>{{ $event->name }}</td>
-
-                    <td>{{ $event->event_date }}</td>
-
-                    <td>{{ $event->location }}</td>
-
-                    <td>
-
-                        <a href="{{ route('events.items.index',$event) }}"
-                           class="btn btn-info btn-sm"
-                           title="Master Item">
-                            <i class="fas fa-gift"></i>
-                        </a>
-
-                        <a href="{{ route('events.participants.index', $event) }}"
-                        class="btn btn-success btn-sm"
-                        title="Peserta">
-                            <i class="fas fa-users"></i>
-
-                        </a>
-
-                        <a href="{{ route('events.edit',$event) }}"
-                           class="btn btn-warning btn-sm"
-                           title="Edit">
-                            <i class="fas fa-edit"></i>
-
-                        </a>
-
-                        <form
-                            action="{{ route('events.destroy',$event) }}"
-                            method="POST"
-                            class="d-inline delete-form">
-
-                            @csrf
-                            @method('DELETE')
-
-                            <button
-                                type="submit"
-                                class="btn btn-danger btn-sm"
-                                title="Hapus">
-
-                                <i class="fas fa-trash"></i>
-
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-            @endforeach
-
-            </tbody>
-
-        </table>
-
+        <!-- Table Responsive Wrapper -->
+        <div class="table-responsive">
+            <table id="eventTable" class="table table-bordered table-striped table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th width="120">Kode</th>
+                        <th>Nama Event</th>
+                        <th width="150">Tanggal</th>
+                        <th>Lokasi</th>
+                        <th width="180">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($events as $event)
+                    <tr>
+                        <td class="align-middle">{{ $event->code }}</td>
+                        <td class="align-middle">{{ $event->name }}</td>
+                        <td class="align-middle">{{ $event->event_date }}</td>
+                        <td class="align-middle">{{ $event->location }}</td>
+                        <td class="align-middle">
+                            <!-- Tombol Aksi Dirapatkan agar tidak memakan banyak tempat -->
+                            <a href="{{ route('events.items.index', $event) }}" class="btn btn-info btn-sm" title="Master Item">
+                                <i class="fas fa-gift"></i>
+                            </a>
+                            <a href="{{ route('events.participants.index', $event) }}" class="btn btn-success btn-sm" title="Peserta">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ route('events.destroy', $event) }}" method="POST" class="d-inline delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
-
 @endsection
 
 @push('scripts')
+<!-- Tambahkan JS DataTables jika belum ada di template utama -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
 <script>
-
-$(function(){
-
+$(document).ready(function() {
+    // Inisialisasi DataTables
     $('#eventTable').DataTable({
-
-        responsive:true,
-
-        autoWidth:false,
-
-        pageLength:10,
-
-        language:{
-
-            search:"Cari :",
-
-            lengthMenu:"Tampilkan _MENU_ data",
-
-            info:"Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-
-            zeroRecords:"Data tidak ditemukan",
-
-            paginate:{
-
-                previous:"Prev",
-
-                next:"Next"
-
+        "responsive": true,
+        "autoWidth": false,
+        "pageLength": 10,
+        "language": {
+            "search": "Cari :",
+            "lengthMenu": "Tampilkan _MENU_ data",
+            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            "zeroRecords": "Data tidak ditemukan",
+            "infoEmpty": "Tidak ada data yang tersedia",
+            "paginate": {
+                "previous": "Sebelumnya",
+                "next": "Selanjutnya"
             }
-
         }
-
     });
 
-});
-
-
-$('.delete-form').submit(function(e){
-
-    e.preventDefault();
-
-    let form = this;
-
-    Swal.fire({
-
-        title:'Hapus Event?',
-
-        text:'Data Event beserta Item akan dihapus.',
-
-        icon:'warning',
-
-        showCancelButton:true,
-
-        confirmButtonColor:'#dc3545',
-
-        cancelButtonColor:'#6c757d',
-
-        confirmButtonText:'Ya, Hapus',
-
-        cancelButtonText:'Batal'
-
-    }).then((result)=>{
-
-        if(result.isConfirmed){
-
-            form.submit();
-
-        }
-
+    // SweetAlert untuk konfirmasi hapus
+    $('.delete-form').submit(function(e) {
+        e.preventDefault();
+        let form = this;
+        Swal.fire({
+            title: 'Hapus Event?',
+            text: 'Data Event beserta Item di dalamnya akan ikut terhapus.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
     });
-
 });
-
 </script>
-
 @endpush

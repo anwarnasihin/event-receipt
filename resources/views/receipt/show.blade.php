@@ -61,6 +61,12 @@
                             <span class="info-label">Email</span>
                             <strong class="info-value text-truncate" id="participant-email" style="max-width: 150px;">-</strong>
                         </div>
+
+                        {{-- INI TAMBAHAN KOTAK NO HP --}}
+                        <div class="info-item">
+                            <span class="info-label">No HP</span>
+                            <strong class="info-value" id="participant-phone">-</strong>
+                        </div>
                     </div>
                     <input type="hidden" id="participant-id" value="">
                     <input type="hidden" id="event-id" value="{{ $event->id }}">
@@ -269,6 +275,7 @@ $('#btn-search').click(function(){
                 $('#participant-code').text(response.participant.participant_code);
                 $('#participant-campus').text(response.participant.campus);
                 $('#participant-email').text(response.participant.email);
+                $('#participant-phone').text(response.participant.phone || '-');
             } else {
                 resetInfoPeserta();
                 Swal.fire({ icon: 'warning', title: 'Tidak Ditemukan', text: response.message });
@@ -292,6 +299,7 @@ function resetInfoPeserta() {
     $('#participant-code').text('-');
     $('#participant-campus').text('-');
     $('#participant-email').text('-');
+    $('#participant-phone').text('-');
 }
 
 //=====================================

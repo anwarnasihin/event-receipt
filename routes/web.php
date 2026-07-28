@@ -10,6 +10,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EventParticipantImportController;
 use App\Http\Controllers\ParticipantReceiptController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ParticipantCheckinController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -75,23 +76,45 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])
     ->name('reports.index');
 
+    // =====================================
+// ABSENSI
+// =====================================
+
+Route::get(
+    '/checkin',
+    [ParticipantCheckinController::class, 'index']
+)->name('checkin.index');
+
+Route::get(
+    '/checkin/event/{event}',
+    [ParticipantCheckinController::class, 'show']
+)->name('checkin.show');
+
+Route::get(
+    '/checkin/event/{event}/search',
+    [ParticipantCheckinController::class, 'search']
+)->name('checkin.search');
+
+Route::post(
+    '/checkin/store',
+    [ParticipantCheckinController::class, 'store']
+)->name('checkin.store');
+
     Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
     ->name('reports.export.excel');
 
     Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
     ->name('reports.export.pdf');
 
+
+
 }); // <-- group auth selesai
-
 require __DIR__.'/auth.php';
-
 use App\Http\Controllers\CheckinController;
-
 Route::get(
     '/checkin/{code}',
     [CheckinController::class,'show']
 )->name('participant.checkin');
-
 Route::post(
     '/checkin/{code}',
     [CheckinController::class,'store']

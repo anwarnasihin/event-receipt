@@ -29,4 +29,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+        public function participantCheckins()
+    {
+        return $this->hasMany(ParticipantCheckin::class, 'created_by');
+    }
 }

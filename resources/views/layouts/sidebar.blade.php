@@ -65,6 +65,14 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('checkin.index') }}"
+                    class="nav-link {{ request()->routeIs('checkin.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-check"></i>
+                        <p>Absensi</p>
+                    </a>
+                </li>
+
                 <!-- LAPORAN -->
                 <li class="nav-header">LAPORAN</li>
                 <li class="nav-item">

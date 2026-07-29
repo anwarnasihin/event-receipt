@@ -45,4 +45,9 @@ class EventParticipant extends Model
     {
         return $this->hasMany(ParticipantReceipt::class);
     }
+
+    public function checkin()
+    {
+        return $this->hasOne(ParticipantCheckin::class);
+    }
 }

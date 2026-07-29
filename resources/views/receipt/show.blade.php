@@ -6,7 +6,7 @@
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap">
         <div class="d-flex align-items-center mb-2 mb-md-0">
-            <a href="{{ route('events.index') }}" class="btn btn-secondary btn-sm mr-3">
+            <a href="{{ route('receipt.index') }}" class="btn btn-secondary btn-sm mr-3">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
             <h3 class="m-0 font-weight-bold text-dark">

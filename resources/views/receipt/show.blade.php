@@ -1,9 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Tanda Terima')
-@section('content')
 
+@section('content')
 <div class="container-fluid py-4 modern-bg">
-    {{-- HEADER (Sudah ditambahkan tombol kembali) --}}
+    {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap">
         <div class="d-flex align-items-center mb-2 mb-md-0">
             <a href="{{ route('events.index') }}" class="btn btn-secondary btn-sm mr-3">
@@ -21,9 +21,7 @@
     {{-- Baris Utama --}}
     <div class="row align-items-stretch">
 
-        {{-- ========================================== --}}
         {{-- KOLOM KIRI (Data Peserta & Souvenir) --}}
-        {{-- ========================================== --}}
         <div class="col-lg-5 col-md-12 mb-4 d-flex flex-column">
 
             {{-- 1. Card Data Peserta --}}
@@ -61,8 +59,6 @@
                             <span class="info-label">Email</span>
                             <strong class="info-value text-truncate" id="participant-email" style="max-width: 150px;">-</strong>
                         </div>
-
-                        {{-- INI TAMBAHAN KOTAK NO HP --}}
                         <div class="info-item">
                             <span class="info-label">No HP</span>
                             <strong class="info-value" id="participant-phone">-</strong>
@@ -73,13 +69,12 @@
                 </div>
             </div>
 
-            {{-- 2. Card Souvenir (Dibuat flex-grow-1 agar mengisi sisa tinggi ke bawah) --}}
+            {{-- 2. Card Souvenir --}}
             <div class="card modern-card flex-grow-1 d-flex flex-column">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title font-weight-bold mb-3">
                         <i class="fas fa-gift text-warning mr-2"></i> Pilih Souvenir
                     </h5>
-                    {{-- Area ini akan meregang mengikuti tinggi kolom kanan --}}
                     <div id="souvenir-list" class="souvenir-container flex-grow-1">
                         @forelse($items as $item)
                         <label class="modern-checkbox-item" for="item{{ $item->id }}">
@@ -98,32 +93,25 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-        {{-- ========================================== --}}
         {{-- KOLOM KANAN (Kamera & Eksekusi) --}}
-        {{-- ========================================== --}}
         <div class="col-lg-7 col-md-12 mb-4 d-flex flex-column">
-            {{-- Card ini dibuat flex-grow-1 agar tingginya presisi dengan kolom kiri --}}
             <div class="card modern-card flex-grow-1 d-flex flex-column">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title font-weight-bold mb-3">
                         <i class="fas fa-camera text-danger mr-2"></i> Bukti Penyerahan
                     </h5>
 
-                    {{-- Kamera Wrapper (Tinggi minimal ditambah agar lebih panjang ke bawah) --}}
                     <div class="camera-modern-wrapper flex-grow-1 position-relative bg-dark rounded-lg overflow-hidden mb-3 shadow-sm d-flex justify-content-center align-items-center" style="min-height: 480px;">
                         <video id="camera" autoplay playsinline class="w-100 h-100" style="object-fit: cover; position: absolute;"></video>
                         <canvas id="canvas" class="w-100 h-100" style="display:none; object-fit: cover; position: absolute;"></canvas>
 
-                        {{-- Floating Button Capture --}}
                         <button type="button" class="btn btn-light shadow-lg btn-floating-capture" id="btn-capture">
                             <i class="fas fa-camera text-primary fa-lg"></i>
                         </button>
                     </div>
 
-                    {{-- Tombol Submit Besar --}}
                     <button type="button" id="btn-submit" class="btn btn-primary btn-lg btn-block modern-submit-btn shadow-sm mt-auto">
                         <i class="fas fa-check-circle mr-2"></i> SERAHKAN SOUVENIR
                     </button>
@@ -133,13 +121,35 @@
 
     </div>
 </div>
-@endsection
 
 <style>
 /* =========================================================
+   FIX SIDEBAR TERPOTONG (Versi Paling Kuat)
+   ========================================================= */
+body, html {
+    height: 100%;
+}
+
+.wrapper {
+    position: relative !important;
+    min-height: 100vh !important;
+}
+
+.main-sidebar, aside {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.content-wrapper {
+    min-height: 100vh !important;
+}
+
+/* =========================================================
    MODERN UI CSS
    ========================================================= */
-
 .modern-bg {
     background-color: #f4f6f9;
 }
@@ -195,7 +205,6 @@
     color: #3a3b45;
 }
 
-/* Container souvenir diubah agar bisa meregang */
 .souvenir-container {
     overflow-y: auto;
     padding-right: 5px;
@@ -251,6 +260,7 @@
     letter-spacing: 0.5px;
 }
 </style>
+@endsection
 
 @push('scripts')
 <script>
@@ -436,6 +446,14 @@ function loadSouvenir(){
 
 $(document).ready(function() {
     startCamera();
+
+    // Auto-adjust sidebar agar selalu sama panjang dengan konten
+    function samakanTinggi() {
+        let tinggiHalaman = $(document).height();
+        $('.main-sidebar').css('min-height', tinggiHalaman + 'px');
+    }
+    samakanTinggi();
+    setTimeout(samakanTinggi, 1500);
 });
 </script>
 @endpush

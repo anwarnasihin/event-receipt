@@ -95,10 +95,20 @@ Route::get(
     [ParticipantCheckinController::class, 'search']
 )->name('checkin.search');
 
+Route::get(
+    '/checkin/event/{event}/participants',
+    [ParticipantCheckinController::class, 'participants']
+)->name('checkin.participants');
+
 Route::post(
     '/checkin/store',
     [ParticipantCheckinController::class, 'store']
 )->name('checkin.store');
+
+Route::post(
+    '/checkin/event/{event}/manual',
+    [ParticipantCheckinController::class, 'storeManual']
+)->name('checkin.manual');
 
     Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
     ->name('reports.export.excel');

@@ -2,113 +2,138 @@
 @section('title', 'Absensi Peserta')
 @section('content')
 
+{{-- Tambahan CSS untuk DataTables --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css">
+
 <div class="container-fluid py-4 modern-bg">
-    {{-- HEADER (Sudah ditambahkan tombol kembali) --}}
+    {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap">
         <div class="d-flex align-items-center mb-2 mb-md-0">
-            <a href="{{ route('events.index') }}" class="btn btn-secondary btn-sm mr-3">
+            <a href="{{ route('checkin.index') }}" class="btn btn-secondary btn-sm mr-3">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
             <h3 class="m-0 font-weight-bold text-dark">
                 <i class="fas fa-user-check text-success mr-2"></i> Absensi Peserta
             </h3>
         </div>
-        <span class="badge badge-primary px-4 py-2 badge-modern">
-            {{ $event->name }}
-        </span>
+        <div class="d-flex align-items-center">
+            <span class="px-3 py-2 font-weight-bold text-secondary bg-light border rounded-pill" style="font-size: 14px;">
+                <i class="fas fa-calendar-alt mr-1 text-primary"></i> {{ $event->name }}
+            </span>
+            <button class="btn btn-success" data-toggle="modal" data-target="#modalManual">
+                <i class="fas fa-user-plus mr-1"></i> Tambah Peserta
+            </button>
+        </div>
     </div>
 
-    {{-- Baris Utama --}}
-    <div class="row align-items-stretch">
-
-        {{-- ========================================== --}}
-        {{-- KOLOM KIRI (Data Peserta & Souvenir) --}}
-        {{-- ========================================== --}}
-        <div class="col-lg-5 col-md-12 mb-4 d-flex flex-column">
-
-            {{-- 1. Card Data Peserta --}}
-            <div class="card modern-card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title font-weight-bold mb-3">
-                        <i class="fas fa-user-circle text-primary mr-2"></i> Data Peserta
-                    </h5>
-
-                    {{-- Form Cari --}}
-                    <div class="input-group modern-input-group mb-3">
-                        <input type="text" id="keyword" class="form-control" placeholder="Ketik ID atau Nama...">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary px-4" id="btn-search" type="button">Cari</button>
-                        </div>
+    {{-- KOTAK RINGKASAN (Stats) --}}
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card modern-card bg-primary text-white h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="font-weight-bold mb-1">{{ $totalParticipants }}</h3>
+                        <p class="mb-0">Total Peserta</p>
                     </div>
-
-                    <hr class="my-3">
-
-                    {{-- Info Peserta --}}
-                    <div class="info-peserta-grid">
-                        <div class="info-item">
-                            <span class="info-label">Nama Lengkap</span>
-                            <strong class="info-value" id="participant-name">-</strong>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Participant ID</span>
-                            <strong class="info-value text-primary" id="participant-code">-</strong>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Kampus</span>
-                            <strong class="info-value" id="participant-campus">-</strong>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <strong class="info-value text-truncate" id="participant-email" style="max-width: 150px;">-</strong>
-                        </div>
-
-                        {{-- INI TAMBAHAN KOTAK NO HP --}}
-                        <div class="info-item">
-                            <span class="info-label">No HP</span>
-                            <strong class="info-value" id="participant-phone">-</strong>
-                        </div>
-                    </div>
-                    <input type="hidden" id="participant-id" value="">
-                    <input type="hidden" id="event-id" value="{{ $event->id }}">
-                </div>
-            </div>
-
-
-
-        </div>
-
-        {{-- ========================================== --}}
-        {{-- KOLOM KANAN (Kamera & Eksekusi) --}}
-        {{-- ========================================== --}}
-        <div class="col-lg-7 col-md-12 mb-4 d-flex flex-column">
-            {{-- Card ini dibuat flex-grow-1 agar tingginya presisi dengan kolom kiri --}}
-            <div class="card modern-card flex-grow-1 d-flex flex-column">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title font-weight-bold mb-3">
-                        <i class="fas fa-user-check text-success mr-2"></i> Proses Absensi
-                    </h5>
-
-                    <div class="camera-modern-wrapper d-flex flex-column justify-content-center align-items-center bg-light rounded-lg mb-3"
-                        style="min-height:480px;">
-                        <i class="fas fa-user-check text-success"
-                        style="font-size:90px;"></i>
-                        <h3 class="mt-4 font-weight-bold">
-                            Status Absensi
-                        </h3>
-                        <p class="text-muted mb-0">
-                            Cari peserta kemudian klik
-                            <strong>CHECK IN</strong>
-                        </p>
-                    </div>
-
-                    {{-- Tombol Submit Besar --}}
-                    <button type="button" id="btn-submit" class="btn btn-primary btn-lg btn-block modern-submit-btn shadow-sm mt-auto">
-                        <i class="fas fa-check-circle mr-2"></i> CHECK IN
-                    </button>
+                    <i class="fas fa-users fa-3x opacity-50"></i>
                 </div>
             </div>
         </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card modern-card bg-success text-white h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="font-weight-bold mb-1">{{ $checkedIn }}</h3>
+                        <p class="mb-0">Sudah Hadir</p>
+                    </div>
+                    <i class="fas fa-user-check fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card modern-card bg-warning text-white h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="font-weight-bold mb-1">{{ $notCheckedIn }}</h3>
+                        <p class="mb-0">Belum Hadir</p>
+                    </div>
+                    <i class="fas fa-user-clock fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {{-- TABEL PESERTA (Full DataTables) --}}
+    <div class="card modern-card">
+        <div class="card-body">
+            <div class="table-responsive mt-2">
+                <table class="table table-bordered table-hover" id="participantTable" width="100%">
+                    <thead class="thead-light">
+                        <tr>
+                            <th width="150">Participant ID</th>
+                            <th>Nama Lengkap</th>
+                            <th width="150">Kampus</th>
+                            <th width="120" class="text-center">Status</th>
+                            <th width="120" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Diisi oleh AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL TAMBAH PESERTA MANUAL (Dipindah ke luar agar terbaca sempurna) --}}
+<div class="modal fade" id="modalManual" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus mr-2"></i> Tambah Peserta Manual
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Participant ID</label>
+                    <input type="text" class="form-control" id="manual_participant_code" placeholder="Contoh: D125364">
+                </div>
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" class="form-control" id="manual_name" placeholder="Nama lengkap peserta">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="manual_email" placeholder="email@binus.ac.id">
+                </div>
+                <div class="form-group">
+                    <label>No HP</label>
+                    <input type="text" class="form-control" id="manual_phone" placeholder="08xxxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>Kampus</label>
+                    <input type="text" class="form-control" id="manual_campus" placeholder="Contoh: Bekasi / Alam Sutera">
+                </div>
+                <div class="form-group">
+                    <label>Jenis Peserta</label>
+                    <select class="form-control" id="manual_type">
+                        <option value="Guest">Guest</option>
+                        <option value="Dosen">Dosen</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Mahasiswa">Mahasiswa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="btnSaveManual">Simpan</button>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -117,219 +142,182 @@
 /* =========================================================
    MODERN UI CSS
    ========================================================= */
-
-.modern-bg {
-    background-color: #f4f6f9;
-}
-
+.modern-bg { background-color: #f4f6f9; }
 .modern-card {
     border: none;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     transition: transform 0.2s;
 }
+.badge-modern { font-size: 14px; border-radius: 8px; font-weight: 500; }
+.opacity-50 { opacity: 0.5; }
 
-.badge-modern {
-    font-size: 14px;
-    border-radius: 8px;
-    font-weight: 500;
+/* Custom DataTables Styling agar lebih rapi */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0 !important;
+    margin-left: 2px !important;
+    border: none !important;
 }
-
-.modern-input-group .form-control {
-    border-radius: 8px 0 0 8px;
-    border: 1px solid #e0e0e0;
-    padding: 12px 15px;
-    box-shadow: none;
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 4px 30px 4px 12px !important;
+    min-width: 70px;
 }
-.modern-input-group .form-control:focus {
-    border-color: #4e73df;
-}
-.modern-input-group .btn {
-    border-radius: 0 8px 8px 0;
-    font-weight: 600;
-}
-
-.info-peserta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-.info-item {
-    background: #f8f9fc;
-    padding: 10px 15px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-}
-.info-label {
-    font-size: 12px;
-    color: #858796;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.info-value {
-    font-size: 15px;
-    color: #3a3b45;
-}
-
-/* Container souvenir diubah agar bisa meregang */
-.souvenir-container {
-    overflow-y: auto;
-    padding-right: 5px;
-}
-.souvenir-container::-webkit-scrollbar { width: 6px; }
-.souvenir-container::-webkit-scrollbar-track { background: transparent; }
-.souvenir-container::-webkit-scrollbar-thumb { background: #d1d3e2; border-radius: 10px; }
-
-.modern-checkbox-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    border: 1px solid #eaecf4;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.modern-checkbox-item:hover {
-    background-color: #f8f9fc;
-    border-color: #d1d3e2;
-}
-.custom-control-input-modern {
-    transform: scale(1.3);
-}
-
-.camera-modern-wrapper {
-    border-radius: 16px;
-}
-.btn-floating-capture {
-    position: absolute;
-    bottom: 20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    transition: all 0.2s ease-in-out;
-}
-.btn-floating-capture:hover {
-    transform: scale(1.1);
-    background-color: #fff;
-}
-
-.modern-submit-btn {
-    border-radius: 12px;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 4px 12px;
+    margin-left: 8px;
 }
 </style>
 
 @push('scripts')
+{{-- Library DataTables JS --}}
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
+
 <script>
 //=====================================
-// SEARCH PESERTA
+// 1. LOAD DATA & INITIALIZE DATATABLES
 //=====================================
-$('#btn-search').click(function(){
-    let keyword = $('#keyword').val();
-    let btnSearch = $(this);
-    btnSearch.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-
-    $.ajax({
-        url: "{{ route('checkin.search', $event->id) }}",
-        type: "GET",
-        data: { keyword: keyword },
-        success: function (response) {
-            btnSearch.html('Cari').prop('disabled', false);
-
-            if (response.success) {
-                $('#participant-id').val(response.participant.id);
-                $('#participant-name').text(response.participant.name);
-                $('#participant-code').text(response.participant.participant_code);
-                $('#participant-campus').text(response.participant.campus);
-                $('#participant-email').text(response.participant.email);
-                $('#participant-phone').text(response.participant.phone || '-');
-            } else {
-                resetInfoPeserta();
-                Swal.fire({ icon: 'warning', title: 'Tidak Ditemukan', text: response.message });
-            }
-        },
-        error: function() {
-            btnSearch.html('Cari').prop('disabled', false);
-            resetInfoPeserta();
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan pada server' });
+function loadParticipants(){
+    $.get("{{ route('checkin.participants', $event->id) }}", function(data){
+        if ($.fn.DataTable.isDataTable('#participantTable')) {
+            $('#participantTable').DataTable().destroy();
         }
+
+        let html = '';
+        data.forEach(function(participant){
+            let status = participant.checkin
+                ? '<span class="badge badge-success px-3 py-1">Hadir</span>'
+                : '<span class="badge badge-secondary px-3 py-1">Belum</span>';
+
+            let action = participant.checkin
+                ? '<button class="btn btn-success btn-sm" disabled><i class="fas fa-check"></i></button>'
+                : `<button class="btn btn-primary btn-sm btn-checkin" data-id="${participant.id}">CHECK IN</button>`;
+
+            html += `
+                <tr>
+                    <td class="align-middle">${participant.participant_code}</td>
+                    <td class="align-middle font-weight-bold">${participant.name}</td>
+                    <td class="align-middle">${participant.campus ?? '-'}</td>
+                    <td class="align-middle text-center">${status}</td>
+                    <td class="align-middle text-center">${action}</td>
+                </tr>
+            `;
+        });
+
+        $('#participantTable tbody').html(html);
+
+        $('#participantTable').DataTable({
+            "language": {
+                "lengthMenu": "Tampilkan _MENU_ data",
+                "search": "Cari :",
+                "info": "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                "infoEmpty": "Menampilkan 0 - 0 dari 0 data",
+                "infoFiltered": "(difilter dari _MAX_ total data)",
+                "zeroRecords": "Data tidak ditemukan",
+                "paginate": {
+                    "first": "Pertama",
+                    "last": "Terakhir",
+                    "next": "Berikutnya",
+                    "previous": "Sebelumnya"
+                }
+            },
+            "ordering": true,
+            "pageLength": 10
+        });
     });
-});
-
-$('#keyword').keypress(function(e){
-    if(e.which == 13) { $('#btn-search').click(); return false; }
-});
-
-function resetInfoPeserta() {
-    $('#participant-id').val('');
-    $('#participant-name').text('-');
-    $('#participant-code').text('-');
-    $('#participant-campus').text('-');
-    $('#participant-email').text('-');
-    $('#participant-phone').text('-');
 }
 
-
-
 //=====================================
-// CHECK IN PESERTA
+// 2. PROSES CHECK IN VIA TABEL
 //=====================================
-$('#btn-submit').click(function () {
-    if ($('#participant-id').val() == '') {
-        Swal.fire('Perhatian', 'Pilih peserta terlebih dahulu.', 'warning');
-        return;
-    }
+$(document).on('click', '.btn-checkin', function () {
+    let participantId = $(this).data('id');
+    let button = $(this);
 
-
-    let btnSubmit = $(this);
-    btnSubmit.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...');
+    button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
 
     $.ajax({
         url: "{{ route('checkin.store') }}",
         type: "POST",
         data: {
             _token: "{{ csrf_token() }}",
-            participant_id: $('#participant-id').val(),
+            participant_id: participantId
         },
-        success:function(response){
-            btnSubmit.prop('disabled', false)
-                .html('<i class="fas fa-check-circle mr-2"></i> CHECK IN');
+        success: function (response) {
             Swal.fire({
-                icon:'success',
-                title:'Berhasil',
-                text:response.message,
-                timer:1500,
-                showConfirmButton:false
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                location.reload();
             });
-            resetForm();
         },
         error: function (xhr) {
-            btnSubmit.prop('disabled', false).html('<i class="fas fa-check-circle mr-2"></i> CHECK IN');
-            let msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan.';
+            button.prop('disabled', false).html('CHECK IN');
+            let msg = xhr.responseJSON?.message ?? 'Terjadi kesalahan.';
             Swal.fire({ icon: 'error', title: 'Gagal', text: msg });
         }
     });
 });
 
-function resetForm() {
-    $('#keyword').val('');
-    resetInfoPeserta();
-    $('#keyword').focus();
-}
-
+//=====================================
+// 3. JALANKAN SAAT HALAMAN DIBUKA
+//=====================================
 $(document).ready(function(){
-    $('#keyword').focus();
+    loadParticipants();
+});
+
+//=====================================
+// 4. SIMPAN PESERTA MANUAL
+//=====================================
+$(document).on('click', '#btnSaveManual', function () {
+    let btnSave = $(this);
+    btnSave.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
+
+    $.ajax({
+        url: "{{ route('checkin.manual', ['event' => $event->id]) }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            participant_code: $('#manual_participant_code').val(),
+            name: $('#manual_name').val(),
+            email: $('#manual_email').val(),
+            phone: $('#manual_phone').val(),
+            campus: $('#manual_campus').val(),
+            participant_type: $('#manual_type').val(),
+        },
+        success: function (response) {
+            btnSave.prop('disabled', false).html('Simpan');
+            $('#modalManual').modal('hide');
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+            }).then(function () {
+                location.reload();
+            });
+        },
+        error: function (xhr) {
+            btnSave.prop('disabled', false).html('Simpan');
+            let msg = 'Terjadi kesalahan.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+            }
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: msg
+            });
+        }
+    });
 });
 </script>
 @endpush

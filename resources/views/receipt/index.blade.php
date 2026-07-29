@@ -32,12 +32,17 @@ document
     .getElementById('eventForm')
     .addEventListener('submit', function(e){
         e.preventDefault();
+
         let eventId = document.getElementById('event').value;
+
         if(eventId == ''){
             alert('Silakan pilih event.');
             return;
         }
-        window.location.href = '/receipt/' + eventId;
+
+        window.location.href = "{{ url('receipt') }}/" + eventId;
     });
 </script>
 @endpush
+
+

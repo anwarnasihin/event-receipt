@@ -139,7 +139,25 @@
                 </div>
                 <div class="form-group">
                     <label>Kampus</label>
-                    <input type="text" class="form-control" id="manual_campus" placeholder="Contoh: Bekasi / Alam Sutera">
+
+                    <select
+                        class="form-control"
+                        id="manual_campus"
+                        name="campus"
+                        required>
+
+                        <option value="">-- Pilih Kampus --</option>
+
+                        @foreach(config('binus.campuses') as $campus)
+
+                            <option value="{{ $campus }}">
+                                {{ $campus }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
                 </div>
                 <div class="form-group">
                     <label>Jenis Peserta</label>

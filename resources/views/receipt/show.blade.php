@@ -13,8 +13,8 @@
                 <i class="fas fa-receipt text-primary mr-2"></i> Penyerahan Souvenir
             </h3>
         </div>
-        <span class="badge badge-primary px-4 py-2 badge-modern">
-            {{ $event->name }}
+        <span class="px-3 py-2 font-weight-bold text-secondary bg-light border rounded-pill" style="font-size: 14px;">
+            <i class="fas fa-calendar-alt mr-1 text-primary"></i> {{ $event->name }}
         </span>
     </div>
 

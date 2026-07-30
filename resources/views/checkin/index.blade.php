@@ -62,7 +62,7 @@ document
             return;
         }
 
-        window.location.href = '/checkin/event/' + eventId;
+        window.location.href = "{{ url('checkin/event') }}/" + eventId;
 
     });
 

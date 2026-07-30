@@ -16,14 +16,36 @@
                 <i class="fas fa-user-check text-success mr-2"></i> Absensi Peserta
             </h3>
         </div>
-        <div class="d-flex align-items-center">
-            <span class="px-3 py-2 font-weight-bold text-secondary bg-light border rounded-pill" style="font-size: 14px;">
-                <i class="fas fa-calendar-alt mr-1 text-primary"></i> {{ $event->name }}
-            </span>
-            <button class="btn btn-success" data-toggle="modal" data-target="#modalManual">
-                <i class="fas fa-user-plus mr-1"></i> Tambah Peserta
-            </button>
-        </div>
+        <div class="d-flex align-items-center flex-wrap">
+
+    <span class="px-3 py-2 mr-2 mb-2 font-weight-bold text-secondary bg-light border rounded-pill">
+        <i class="fas fa-calendar-alt mr-1 text-primary"></i>
+        {{ $event->name }}
+    </span>
+
+    <a href="{{ route('checkin.export.pdf', $event->id) }}"
+       class="btn btn-danger mr-2 mb-2">
+        <i class="fas fa-file-pdf mr-1"></i>
+        Export PDF
+    </a>
+
+    <a href="{{ route('checkin.export.excel', $event->id) }}"
+       class="btn btn-success mr-2 mb-2">
+        <i class="fas fa-file-excel mr-1"></i>
+        Export Excel
+    </a>
+
+    <button
+        class="btn btn-primary mb-2"
+        data-toggle="modal"
+        data-target="#modalManual">
+
+        <i class="fas fa-user-plus mr-1"></i>
+        Tambah Peserta
+
+    </button>
+
+</div>
     </div>
 
     {{-- KOTAK RINGKASAN (Stats) --}}

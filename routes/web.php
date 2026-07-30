@@ -110,6 +110,21 @@ Route::post(
     [ParticipantCheckinController::class, 'storeManual']
 )->name('checkin.manual');
 
+/*
+|--------------------------------------------------------------------------
+| EXPORT LAPORAN ABSENSI
+|--------------------------------------------------------------------------
+*/
+Route::get(
+    '/checkin/event/{event}/export/excel',
+    [ParticipantCheckinController::class, 'exportExcel']
+)->name('checkin.export.excel');
+
+Route::get(
+    '/checkin/event/{event}/export/pdf',
+    [ParticipantCheckinController::class, 'exportPdf']
+)->name('checkin.export.pdf');
+
     Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
     ->name('reports.export.excel');
 

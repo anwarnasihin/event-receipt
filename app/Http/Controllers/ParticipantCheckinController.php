@@ -9,6 +9,9 @@ use App\Models\ParticipantCheckin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Exports\AttendanceExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParticipantCheckinController extends Controller
 {
@@ -176,4 +179,60 @@ class ParticipantCheckinController extends Controller
 
         }
     }
+
+    /**
+ * Export Excel
+ */
+public function exportExcel(Event $event)
+{
+    $filename =
+        'Laporan_Absensi_' .
+        Str::slug($event->name, '_') .
+        '_' .
+        now()->format('Ymd_His') .
+        '.xlsx';
+
+    return Excel::download(
+        new AttendanceExport($event),
+        $filename
+    );
+}
+
+/**
+ * Export PDF
+ */
+public function exportPdf(Event $event)
+{
+    $participants = EventParticipant::with([
+            'checkin.user',
+        ])
+        ->where('event_id', $event->id)
+        ->orderBy('participant_code')
+        ->get();
+
+    $totalParticipants = $participants->count();
+    $totalPresent = $participants->whereNotNull('checkin')->count();
+    $totalAbsent = $totalParticipants - $totalPresent;
+    $exportedAt = now();
+    $pdf = Pdf::loadView(
+        'checkin.pdf',
+        compact(
+            'event',
+            'participants',
+            'totalParticipants',
+            'totalPresent',
+            'totalAbsent',
+            'exportedAt'
+        )
+    );
+
+    $pdf->setPaper('a4', 'landscape');
+    $filename =
+        'Laporan_Absensi_' .
+        Str::slug($event->name, '_') .
+        '_' .
+        now()->format('Ymd_His') .
+        '.pdf';
+    return $pdf->download($filename);
+}
 }

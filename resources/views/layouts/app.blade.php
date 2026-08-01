@@ -50,24 +50,19 @@
 
 <!-- DataTables -->
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
 <!-- DataTables Responsive -->
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
 
 $(function(){
 
-    $('#btnLogout').click(function(e){
+    $('#btnLogout, #btnLogoutNavbar').click(function(e){
         e.preventDefault();
         Swal.fire({
             title: 'Logout?',

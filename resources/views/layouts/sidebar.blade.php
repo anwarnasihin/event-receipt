@@ -26,6 +26,9 @@
 </a>
 
     <div class="sidebar">
+        @php
+            $user = auth()->user();
+        @endphp
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column"
                 data-widget="treeview"
@@ -41,60 +44,84 @@
                 </li>
 
                 <!-- MASTER -->
-                <li class="nav-header">MASTER</li>
+                @if($user->hasRole('Administrator'))
 
-                <li class="nav-item">
-                    <a href="{{ route('events.index') }}"
-                       class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
-                        <p>Master Event</p>
-                    </a>
-                </li>
+                    <li class="nav-header">MASTER</li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('events.index') }}"
+                        class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>Master Event</p>
+                        </a>
+                    </li>
+
+                @endif
 
                 <!-- TRANSAKSI -->
-                <li class="nav-header">TRANSAKSI</li>
+                @if($user->hasAnyRole(['Administrator','Petugas']))
+                    <li class="nav-header">TRANSAKSI</li>
 
-                <li class="nav-item">
-                    <a href="{{ route('receipt.index') }}"
-                    class="nav-link {{ request()->routeIs('receipt.*') ? 'active' : '' }}">
+                    <li class="nav-item">
+                        <a href="{{ route('receipt.index') }}"
+                        class="nav-link {{ request()->routeIs('receipt.*') ? 'active' : '' }}">
 
-                        <i class="nav-icon fas fa-receipt"></i>
+                            <i class="nav-icon fas fa-receipt"></i>
 
-                        <p>Tanda Terima</p>
+                            <p>Tanda Terima</p>
 
-                    </a>
-                </li>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('checkin.index') }}"
-                    class="nav-link {{ request()->routeIs('checkin.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-check"></i>
-                        <p>Absensi</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('checkin.index') }}"
+                        class="nav-link {{ request()->routeIs('checkin.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-check"></i>
+                            <p>Absensi</p>
+                        </a>
+                    </li>
+                @endif
 
                 <!-- LAPORAN -->
-                <li class="nav-header">LAPORAN</li>
-                <li class="nav-item">
-                    <a href="{{ route('reports.index') }}"
-                    class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>
-                            Laporan
-                        </p>
-                    </a>
-                </li>
+                @if($user->hasAnyRole([
+                    'Administrator',
+                    'Petugas',
+                    'Viewer'
+                    ]))
+                    <li class="nav-header">LAPORAN</li>
+                    <li class="nav-item">
+                        <a href="{{ route('reports.index') }}"
+                        class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>
+                                Laporan
+                            </p>
+                        </a>
+                    </li>
+                @endif
 
                 <!-- SYSTEM -->
-                <li class="nav-header">SYSTEM</li>
+                @if($user->hasRole('Administrator'))
 
-                <li class="nav-item">
-                    <a href="{{ route('settings.index') }}"
-                       class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Settings</p>
-                    </a>
-                </li>
+                    <li class="nav-header">SYSTEM</li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('users.index') }}"
+                        class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>User Management</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('settings.index') }}"
+                        class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>Settings</p>
+                        </a>
+                    </li>
+
+                @endif
 
                 <li class="nav-item">
                     <a href="#" class="nav-link" id="btnLogout">

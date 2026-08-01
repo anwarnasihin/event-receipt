@@ -11,6 +11,7 @@ use App\Http\Controllers\EventParticipantImportController;
 use App\Http\Controllers\ParticipantReceiptController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ParticipantCheckinController;
+use App\Http\Controllers\UserManagementController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -131,7 +132,12 @@ Route::get(
     Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
     ->name('reports.export.pdf');
 
-
+Route::resource('users', UserManagementController::class)
+    ->except([
+        'create',
+        'show',
+        'edit',
+    ]);
 
 }); // <-- group auth selesai
 require __DIR__.'/auth.php';

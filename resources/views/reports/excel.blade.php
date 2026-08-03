@@ -64,6 +64,7 @@ $showEventColumn = $receipts
         <td>{{ $exportedAt->format('d F Y H:i:s') }}</td>
     </tr>
 
+    {{-- TAMBAHKAN KEMBALI 1 BARIS KOSONG SEBAGAI JARAK PEMISAH YANG RAPI --}}
     <tr>
         <td colspan="{{ $showEventColumn ? 9 : 8 }}"></td>
     </tr>
@@ -75,9 +76,9 @@ $showEventColumn = $receipts
     <tr>
         <th colspan="{{ $showEventColumn ? 9 : 8 }}"
             style="
-                background:#1F4E78;
-                color:white;
-                font-size:14px;
+                background:#FFFFFF;
+                color:#000000;
+                font-size:12px;
                 font-weight:bold;
                 text-align:center;
             ">
@@ -112,19 +113,12 @@ $showEventColumn = $receipts
             @if($showEventColumn)
                 <td>{{ optional(optional($receipt->participant)->event)->name }}</td>
             @endif
-
             <td>{{ optional($receipt->participant)->participant_code }}</td>
-
             <td>{{ optional($receipt->participant)->name }}</td>
-
             <td>{{ optional($receipt->participant)->phone }}</td>
-
             <td>{{ optional($receipt->participant)->campus }}</td>
-
             <td>{{ $receipt->receiptItems->pluck('item.name')->implode(', ') }}</td>
-
             <td>{{ \Carbon\Carbon::parse($receipt->received_at)->format('d-m-Y H:i') }}</td>
-
             <td>{{ optional($receipt->user)->name }}</td>
 
         </tr>

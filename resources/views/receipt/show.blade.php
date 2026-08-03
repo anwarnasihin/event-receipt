@@ -79,7 +79,25 @@
                         @forelse($items as $item)
                         <label class="modern-checkbox-item" for="item{{ $item->id }}">
                             <div class="d-flex align-items-center">
-                                <input type="checkbox" name="items[]" value="{{ $item->id }}" id="item{{ $item->id }}" class="mr-3 custom-control-input-modern">
+                                @if($items->count() == 1)
+
+                                    <input
+                                        type="hidden"
+                                        name="items[]"
+                                        value="{{ $item->id }}">
+
+                                    <i class="fas fa-check-circle text-success fa-lg mr-3"></i>
+
+                                @else
+
+                                    <input
+                                        type="checkbox"
+                                        name="items[]"
+                                        value="{{ $item->id }}"
+                                        id="item{{ $item->id }}"
+                                        class="mr-3 custom-control-input-modern">
+
+                                @endif
                                 <span class="font-weight-bold">{{ $item->name }}</span>
                             </div>
                             <span class="badge badge-light text-muted">Stok: {{ $item->qty ?? '0' }}</span>
@@ -375,17 +393,32 @@ $('#btn-submit').click(function () {
         Swal.fire('Perhatian', 'Pilih peserta terlebih dahulu.', 'warning');
         return;
     }
-    if ($('input[name="items[]"]:checked').length == 0) {
-        Swal.fire('Perhatian', 'Pilih minimal satu souvenir.', 'warning');
-        return;
-    }
+    let items = [];
+
+        $('input[name="items[]"]').each(function () {
+
+            if ($(this).attr('type') === 'hidden') {
+                items.push($(this).val());
+            }
+
+            if ($(this).attr('type') === 'checkbox' && $(this).is(':checked')) {
+                items.push($(this).val());
+            }
+
+        });
+
+        if (items.length === 0) {
+            Swal.fire(
+                'Perhatian',
+                'Pilih minimal satu souvenir.',
+                'warning'
+            );
+            return;
+        }
     if (photoData == null) {
         Swal.fire('Perhatian', 'Ambil foto bukti terlebih dahulu.', 'warning');
         return;
     }
-
-    let items = [];
-    $('input[name="items[]"]:checked').each(function () { items.push($(this).val()); });
 
     let btnSubmit = $(this);
     btnSubmit.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...');

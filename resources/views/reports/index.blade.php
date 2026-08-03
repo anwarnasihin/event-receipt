@@ -54,13 +54,13 @@
 
             <!-- Tombol Export -->
             <div class="mb-3">
-                <a href="{{ route('reports.export.excel') }}"
+                <a href="{{ route('reports.export.excel', request()->query()) }}"
                     class="btn btn-success">
                     <i class="fas fa-file-excel"></i>
                     Export Excel
                 </a>
 
-                <a href="{{ route('reports.export.pdf') }}"
+                <a href="{{ route('reports.export.pdf', request()->query()) }}"
                     class="btn btn-danger">
                     <i class="fas fa-file-pdf"></i>
                     Export PDF

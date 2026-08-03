@@ -16,7 +16,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background: linear-gradient(180deg, #46556d 0%, #000000 100%) !important;">
 
     <!-- Logo -->
-    <!-- Logo -->
 <a href="{{ route('dashboard') }}" class="brand-link text-center" style="display: block; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
     <!-- Ganti 'images/binus3.png' jika Anda memiliki file logo putih atau logo lain yang lebih pas -->
     <img src="{{ asset('images/binus2.png') }}"

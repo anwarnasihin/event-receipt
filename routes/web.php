@@ -22,11 +22,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
+    Route::middleware(['role:Administrator'])->group(function () {
+
     Route::resource('events', EventController::class);
+
     Route::resource('events.items', EventItemController::class);
+
     Route::get(
-    'events/{event}/participants/import',
-    [EventParticipantImportController::class, 'create']
+        'events/{event}/participants/import',
+        [EventParticipantImportController::class, 'create']
     )->name('events.participants.import');
 
     Route::post(
@@ -38,118 +42,65 @@ Route::middleware(['auth'])->group(function () {
         'events/{event}/participants/template',
         [EventParticipantImportController::class, 'template']
     )->name('events.participants.template');
-    Route::resource('events.participants', EventParticipantController::class);
 
-    Route::get('/settings', [SettingController::class, 'index'])
-        ->name('settings.index');
+    Route::resource(
+        'events.participants',
+        EventParticipantController::class
+    );
 
-    Route::put('/settings', [SettingController::class, 'update'])
-        ->name('settings.update');
+});
+
+    Route::middleware(['role:Administrator'])->group(function () {
+
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+});
 
     Route::get('/qr-test', function () {
         return QrCode::size(250)
             ->generate('Hello BINUS');
     });
 
-    Route::get(
-        '/receipt',
-        [ParticipantReceiptController::class, 'index']
-    )->name('receipt.index');
+    Route::middleware(['role:Administrator|Petugas'])->group(function () {
+    Route::get('/receipt',[ParticipantReceiptController::class, 'index'])->name('receipt.index');
+    Route::get('/receipt/{event}',[ParticipantReceiptController::class, 'show'])->name('receipt.show');
+    Route::get('/receipt/{event}/search',[ParticipantReceiptController::class, 'search'])->name('receipt.search');
+    Route::post('/receipt/store',[ParticipantReceiptController::class, 'store'])->name('receipt.store');
+    Route::get('/receipt/{event}/items', [ParticipantReceiptController::class, 'items'])->name('receipt.items');
+    });
 
-    Route::get(
-    '/receipt/{event}',
-    [ParticipantReceiptController::class, 'show']
-    )->name('receipt.show');
-
-    Route::get(
-        '/receipt/{event}/search',
-        [ParticipantReceiptController::class, 'search']
-    )->name('receipt.search');
-
-    Route::post(
-        '/receipt/store',
-        [ParticipantReceiptController::class, 'store']
-    )->name('receipt.store');
-
-    Route::get('/receipt/{event}/items', [ParticipantReceiptController::class, 'items'])
-    ->name('receipt.items');
-
-    Route::get('/reports', [ReportController::class, 'index'])
-    ->name('reports.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     // =====================================
 // ABSENSI
 // =====================================
-
-Route::get(
-    '/checkin',
-    [ParticipantCheckinController::class, 'index']
-)->name('checkin.index');
-
-Route::get(
-    '/checkin/event/{event}',
-    [ParticipantCheckinController::class, 'show']
-)->name('checkin.show');
-
-Route::get(
-    '/checkin/event/{event}/search',
-    [ParticipantCheckinController::class, 'search']
-)->name('checkin.search');
-
-Route::get(
-    '/checkin/event/{event}/participants',
-    [ParticipantCheckinController::class, 'participants']
-)->name('checkin.participants');
-
-Route::post(
-    '/checkin/store',
-    [ParticipantCheckinController::class, 'store']
-)->name('checkin.store');
-
-Route::post(
-    '/checkin/event/{event}/manual',
-    [ParticipantCheckinController::class, 'storeManual']
-)->name('checkin.manual');
-
+Route::middleware(['role:Administrator|Petugas'])->group(function () {
+Route::get('/checkin',[ParticipantCheckinController::class, 'index'])->name('checkin.index');
+Route::get('/checkin/event/{event}',[ParticipantCheckinController::class, 'show'])->name('checkin.show');
+Route::get('/checkin/event/{event}/search',[ParticipantCheckinController::class, 'search'])->name('checkin.search');
+Route::get('/checkin/event/{event}/participants',[ParticipantCheckinController::class, 'participants'])->name('checkin.participants');
+Route::post('/checkin/store',[ParticipantCheckinController::class, 'store'])->name('checkin.store');
+Route::post('/checkin/event/{event}/manual',[ParticipantCheckinController::class, 'storeManual'])->name('checkin.manual');
 /*
 |--------------------------------------------------------------------------
 | EXPORT LAPORAN ABSENSI
 |--------------------------------------------------------------------------
 */
-Route::get(
-    '/checkin/event/{event}/export/excel',
-    [ParticipantCheckinController::class, 'exportExcel']
-)->name('checkin.export.excel');
+Route::get('/checkin/event/{event}/export/excel',[ParticipantCheckinController::class, 'exportExcel'])->name('checkin.export.excel');
+Route::get('/checkin/event/{event}/export/pdf',[ParticipantCheckinController::class, 'exportPdf'])->name('checkin.export.pdf');
+});
+    Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
+    Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
 
-Route::get(
-    '/checkin/event/{event}/export/pdf',
-    [ParticipantCheckinController::class, 'exportPdf']
-)->name('checkin.export.pdf');
-
-    Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
-    ->name('reports.export.excel');
-
-    Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
-    ->name('reports.export.pdf');
-
-Route::resource('users', UserManagementController::class)
-    ->except([
-        'create',
-        'show',
-        'edit',
-    ]);
+Route::middleware(['role:Administrator'])->group(function () {
+Route::resource('users', UserManagementController::class)->except(['create','show','edit',]);});
 
 }); // <-- group auth selesai
 require __DIR__.'/auth.php';
 use App\Http\Controllers\CheckinController;
-Route::get(
-    '/checkin/{code}',
-    [CheckinController::class,'show']
-)->name('participant.checkin');
-Route::post(
-    '/checkin/{code}',
-    [CheckinController::class,'store']
-)->name('participant.checkin.store');
+Route::get('/checkin/{code}',[CheckinController::class,'show'])->name('participant.checkin');
+Route::post('/checkin/{code}',[CheckinController::class,'store'])->name('participant.checkin.store');
 
 
 

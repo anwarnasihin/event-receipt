@@ -121,7 +121,7 @@ if($showEventColumn){
 
                 :
 
-                {{ $event?->name ?? 'Semua Event' }}
+                {{ $reportEventName }}
 
             </td>
 

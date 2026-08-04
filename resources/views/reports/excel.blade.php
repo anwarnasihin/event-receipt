@@ -10,11 +10,7 @@
 
 @php
 
-$showEventColumn = $receipts
-    ->pluck('participant.event.id')
-    ->filter()
-    ->unique()
-    ->count() > 1;
+$showEventColumn = is_null($event);
 
 @endphp
 
@@ -49,7 +45,7 @@ $showEventColumn = $receipts
     <tr>
         <td><strong>Event</strong></td>
         <td>:</td>
-        <td>{{ $event?->name ?? 'Semua Event' }}</td>
+        <td>{{ $reportEventName }}</td>
     </tr>
 
     <tr>

@@ -63,6 +63,31 @@ class ReceiptReportExport implements FromView, ShouldAutoSize, WithTitle, WithSt
         $receipts = $query
             ->latest('received_at')
             ->get();
+            /*
+            |--------------------------------------------------------------------------
+            | Nama Event untuk Laporan
+            |--------------------------------------------------------------------------
+            */
+
+            $reportEventName = 'Semua Event';
+
+            if ($this->eventId) {
+
+                $reportEventName = \App\Models\Event::find($this->eventId)?->name;
+
+            } else {
+
+                $eventNames = $receipts
+                    ->pluck('participant.event.name')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                if ($eventNames->count() == 1) {
+                    $reportEventName = $eventNames->first();
+                }
+
+            }
 
         $this->totalParticipants = $receipts->count();
 
@@ -118,11 +143,7 @@ class ReceiptReportExport implements FromView, ShouldAutoSize, WithTitle, WithSt
             })
             ->sortKeys();
 
-        $this->showEventColumn = $receipts
-            ->pluck('participant.event.id')
-            ->filter()
-            ->unique()
-            ->count() > 1;
+        $this->showEventColumn = is_null($this->eventId);
 
         $event = null;
         if ($this->eventId) {
@@ -130,13 +151,17 @@ class ReceiptReportExport implements FromView, ShouldAutoSize, WithTitle, WithSt
         }
 
         return view('reports.excel', [
-            'receipts' => $receipts,
-            'event' => $event,
-            'exportedAt' => now(),
-            'totalParticipants' => $totalParticipants,
-            'totalItem' => $totalItem,
-            'totalSouvenirType' => $totalSouvenirType,
-            'souvenirSummary' => $souvenirSummary,
+
+            'receipts'           => $receipts,
+            'event'              => $event,
+            'reportEventName'    => $reportEventName,
+            'exportedAt'         => now(),
+
+            'totalParticipants'  => $totalParticipants,
+            'totalItem'          => $totalItem,
+            'totalSouvenirType'  => $totalSouvenirType,
+            'souvenirSummary'    => $souvenirSummary,
+
         ]);
     }
 
@@ -185,43 +210,7 @@ class ReceiptReportExport implements FromView, ShouldAutoSize, WithTitle, WithSt
                 }
 
                 // Agar baris DATA PESERTA menempel langsung di atas header tabel (mengisi baris kosong sebelumnya)
-                $dataTitleRow = $headerRow - 1;
-                if ($dataTitleRow < 7) {
-                    $dataTitleRow = 7;
-                }
-
-                // Pindahkan header tabel utama naik 1 baris ke atas untuk menutup celah kosong
-                $newHeaderRow = $dataTitleRow + 1;
-
-                // Jika posisi header bergeser, kita pastikan isi tabel ikut naik (jika template view mencetak header di baris tertentu)
-                // Di sini kita langsung format baris dataTitleRow sebagai "DATA PESERTA"
-                $sheet->mergeCells("A{$dataTitleRow}:{$lastColumn}{$dataTitleRow}");
-
-                $sheet->setCellValue("A{$dataTitleRow}", "DATA PESERTA");
-
-                // Styling untuk teks DATA PESERTA (Bersih tanpa background biru, teks hitam di tengah)
-                $sheet->getStyle("A{$dataTitleRow}:{$lastColumn}{$dataTitleRow}")
-                ->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                        'size' => 12,
-                        'color' => [
-                            'rgb' => '000000',
-                        ],
-                    ],
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => [
-                            'rgb' => 'FFFFFF',
-                        ],
-                    ],
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ],
-                ]);
-
-                $sheet->getRowDimension($dataTitleRow)->setRowHeight(25);
+                
 
                 // Merge Judul Atas
                 $sheet->mergeCells("A1:{$lastColumn}1");

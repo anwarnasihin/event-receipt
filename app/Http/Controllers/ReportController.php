@@ -92,6 +92,25 @@ class ReportController extends Controller
         $receipts = $query
             ->latest('received_at')
             ->get();
+            $reportEventName = 'Semua Event';
+
+            if ($request->event_id) {
+
+                $reportEventName = Event::find($request->event_id)?->name;
+
+            } else {
+
+                $eventNames = $receipts
+                    ->pluck('participant.event.name')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                if ($eventNames->count() == 1) {
+                    $reportEventName = $eventNames->first();
+                }
+
+            }
 
             // Summary
             $totalParticipants = $receipts->count();
@@ -131,6 +150,7 @@ class ReportController extends Controller
                 'receipts',
                 'event',
                 'showEventColumn',
+                'reportEventName',
                 'totalParticipants',
                 'totalItem',
                 'totalSouvenirType',

@@ -31,7 +31,7 @@
 
                 <!-- Logo -->
                 <div class="mb-6">
-                    <img src="{{ asset('images/binus2.png') }}"
+                    <img src="{{ asset('images/BINUSUNIVERSITYWhite.png') }}"
                         alt="Logo Binus"
                         class="w-80 sm:w-96 h-auto object-contain drop-shadow-lg"
                         style="max-width: 480px;">
@@ -59,7 +59,7 @@
 
                 <!-- Footer Simpel -->
                 <div class="mt-8 text-center text-sm text-blue-200">
-                    &copy; {{ date('Y') }} BINUS University. All rights reserved.
+                    &copy; {{ date('Y') }} IT BINUS Univ Bekasi. All rights reserved.
                 </div>
 
             </div>

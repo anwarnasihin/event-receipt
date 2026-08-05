@@ -18,13 +18,13 @@
     <!-- Logo -->
 <a href="{{ route('dashboard') }}" class="brand-link text-center" style="display: block; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
     <!-- Ganti 'images/binus3.png' jika Anda memiliki file logo putih atau logo lain yang lebih pas -->
-    <img src="{{ asset('images/binus2.png') }}"
+    <img src="{{ asset('images/BINUSUNIVERSITYWhite.png') }}"
          alt="Logo Event"
          class="img-fluid"
          style="max-height: 45px; width: auto; margin: 0 auto; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));">
 </a>
 
-    <div class="sidebar">
+    <div class="sidebar d-flex flex-column justify-content-between" style="height: calc(100vh - 70px); overflow-y: auto;">
         @php
             $user = auth()->user();
         @endphp
@@ -143,5 +143,7 @@
             </ul>
         </nav>
     </div>
-
+    <div class="text-center py-3" style="position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: #a1aab9; background: linear-gradient(180deg, #46556d 0%, #000000 100%);">
+        &copy; 2026 IT BINUS Univ Bekasi.<br>All rights reserved.
+    </div>
 </aside>

@@ -26,6 +26,12 @@ class StoreUserRequest extends FormRequest
                 'string',
                 'max:255',
             ],
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:users,username',
+            ],
 
             'email' => [
                 'required',
@@ -56,6 +62,9 @@ class StoreUserRequest extends FormRequest
         return [
 
             'name.required' => 'Nama wajib diisi.',
+
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan.',
 
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',

@@ -35,11 +35,13 @@ public function store(StoreUserRequest $request)
 {
     $user = User::create([
 
-        'name' => $request->name,
+    'name' => $request->name,
 
-        'email' => $request->email,
+    'username' => $request->username,
 
-        'password' => Hash::make($request->password),
+    'email' => $request->email,
+
+    'password' => Hash::make($request->password),
 
     ]);
 
@@ -64,11 +66,9 @@ public function update(
 )
 {
     $data = [
-
         'name' => $request->name,
-
+        'username' => $request->username,
         'email' => $request->email,
-
     ];
 
     if ($request->filled('password')) {

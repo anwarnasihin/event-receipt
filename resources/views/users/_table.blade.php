@@ -49,6 +49,7 @@
                         class="btn btn-warning btn-sm btn-edit"
                         data-id="{{ $user->id }}"
                         data-name="{{ $user->name }}"
+                        data-username="{{ $user->username }}"
                         data-email="{{ $user->email }}"
                         data-role="{{ optional($user->roles->first())->name }}"
                         data-toggle="modal"
@@ -98,10 +99,12 @@ $(document).ready(function(){
 
         let id    = $(this).data('id');
         let name  = $(this).data('name');
+        let username = $(this).data('username');
         let email = $(this).data('email');
         let role  = $(this).data('role');
 
         $('#edit_name').val(name);
+        $('#edit_username').val(username);
         $('#edit_email').val(email);
         $('#edit_role').val(role);
 

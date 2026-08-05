@@ -34,6 +34,27 @@
                             required>
                     </div>
                     <div class="form-group">
+
+                    <label>Username</label>
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control"
+                            placeholder="Masukkan username"
+                            required>
+                        <div class="input-group-append">
+                            <button
+                                type="button"
+                                class="btn btn-info"
+                                id="generateUsername">
+                                ✨ Generate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                    <div class="form-group">
                         <label>Email</label>
                         <input
                             type="email"
@@ -92,6 +113,50 @@
                         Simpan
                     </button>
                 </div>
+                <script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const btnGenerate = document.getElementById('generateUsername');
+
+    if (!btnGenerate) return;
+
+    btnGenerate.addEventListener('click', function () {
+
+        const namaInput = document.querySelector('#modalCreateUser input[name="name"]');
+        const usernameInput = document.getElementById('username');
+
+        let nama = namaInput.value.trim();
+
+        if (nama === '') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Perhatian',
+                text: 'Silakan isi Nama Lengkap terlebih dahulu.'
+            });
+            return;
+        }
+
+        // Hilangkan gelar depan
+        nama = nama.replace(/^(dr\.?|drs\.?|dra\.?|ir\.?|prof\.?)\s+/i, '');
+
+        // Hilangkan gelar belakang
+        nama = nama.replace(/,.*$/, '');
+
+        // Ambil kata pertama
+        let username = nama.split(' ')[0];
+
+        // Hilangkan karakter selain huruf & angka
+        username = username.replace(/[^a-zA-Z0-9]/g, '');
+
+        // Huruf kecil
+        username = username.toLowerCase();
+
+        usernameInput.value = username;
+
+    });
+
+});
+</script>
             </form>
         </div>
     </div>

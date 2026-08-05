@@ -35,6 +35,15 @@
                             required>
                     </div>
                     <div class="form-group">
+                        <label>Username</label>
+                        <input
+                            type="text"
+                            id="edit_username"
+                            name="username"
+                            class="form-control"
+                            required>
+                    </div>
+                    <div class="form-group">
                         <label>Email</label>
                         <input
                             type="email"

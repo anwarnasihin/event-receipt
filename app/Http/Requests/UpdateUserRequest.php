@@ -28,6 +28,14 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
             ],
 
+            'username' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'username')
+                    ->ignore($this->user),
+            ],
+
             'email' => [
 
                 'required',
@@ -61,6 +69,9 @@ class UpdateUserRequest extends FormRequest
         return [
 
             'name.required' => 'Nama wajib diisi.',
+
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan.',
 
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',

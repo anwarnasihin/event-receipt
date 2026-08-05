@@ -72,6 +72,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
+    
+
     // =====================================
 // ABSENSI
 // =====================================

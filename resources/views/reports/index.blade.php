@@ -78,6 +78,9 @@
                             <th>Souvenir</th>
                             <th width="160">Tanggal</th>
                             <th width="150">Petugas</th>
+                            @if(auth()->user()->hasRole('Administrator'))
+                            <th width="70">Device</th>
+                            @endif
                             <th width="80">Foto</th>
                         </tr>
                     </thead>
@@ -101,7 +104,23 @@
                                 {{ \Carbon\Carbon::parse($receipt->received_at)->format('d M Y H:i') }}
                             </td>
                             <td>{{ optional($receipt->user)->name }}</td>
+                            @if(auth()->user()->hasRole('Administrator'))
                             <td class="text-center">
+                                <button
+                                    type="button"
+                                    class="btn btn-info btn-sm btn-device"
+                                    data-user="{{ optional($receipt->user)->name }}"
+                                    data-ip="{{ $receipt->ip_address }}"
+                                    data-browser="{{ $receipt->browser }}"
+                                    data-os="{{ $receipt->operating_system }}"
+                                    data-agent="{{ $receipt->user_agent }}"
+                                    data-date="{{ \Carbon\Carbon::parse($receipt->received_at)->format('d F Y H:i') }}">
+                                    <i class="fas fa-laptop"></i>
+                                </button>
+                            </td>
+                            @endif
+                            <td class="text-center">
+
                                 @if($receipt->photo)
                                     <button type="button" class="btn btn-info btn-sm btn-photo" data-photo="{{ asset('storage/'.$receipt->photo) }}">
                                         <i class="fas fa-eye"></i>
@@ -155,6 +174,59 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="deviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-laptop"></i>
+                    Informasi Perangkat
+                </h5>
+                <button
+                    type="button"
+                    class="close text-white"
+                    data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered mb-0">
+                    <tr>
+                        <th width="160">Petugas</th>
+                        <td id="device-user"></td>
+                    </tr>
+                    <tr>
+                        <th>IP Address</th>
+                        <td id="device-ip"></td>
+                    </tr>
+                    <tr>
+                        <th>Browser</th>
+                        <td id="device-browser"></td>
+                    </tr>
+                    <tr>
+                        <th>Operating System</th>
+                        <td id="device-os"></td>
+                    </tr>
+                    <tr>
+                        <th>Waktu</th>
+                        <td id="device-date"></td>
+                    </tr>
+                    <tr>
+                        <th>User Agent</th>
+                        <td id="device-agent" style="word-break:break-all;font-size:12px;"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button
+                    class="btn btn-secondary"
+                    data-dismiss="modal">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -189,6 +261,15 @@ $(document).ready(function(){
         let photo = $(this).data('photo');
         $('#preview-photo').attr('src', photo);
         $('#photoModal').modal('show');
+    });
+        $('.btn-device').click(function(){
+        $('#device-user').text($(this).data('user'));
+        $('#device-ip').text($(this).data('ip'));
+        $('#device-browser').text($(this).data('browser'));
+        $('#device-os').text($(this).data('os'));
+        $('#device-agent').text($(this).data('agent'));
+        $('#device-date').text($(this).data('date'));
+        $('#deviceModal').modal('show');
     });
 });
 </script>

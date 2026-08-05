@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class ParticipantReceipt extends Model
 {
-    protected $fillable = [
+        protected $fillable = [
         'event_participant_id',
         'user_id',
         'photo',
         'received_at',
         'ip_address',
+        'browser',
+        'operating_system',
+        'user_agent',
         'notes'
     ];
 

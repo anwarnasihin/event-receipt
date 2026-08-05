@@ -11,6 +11,7 @@ class ParticipantReceipt extends Model
         'user_id',
         'photo',
         'received_at',
+        'ip_address',
         'notes'
     ];
 

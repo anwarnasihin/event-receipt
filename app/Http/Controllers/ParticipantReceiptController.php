@@ -95,13 +95,10 @@ class ParticipantReceiptController extends Controller
         $receipt = ParticipantReceipt::create([
 
             'event_participant_id' => $participant->id,
-
             'user_id' => Auth::id(),
-
             'photo' => 'receipts/' . $fileName,
-
             'received_at' => now(),
-
+            'ip_address' => $request->ip(),
             'notes' => null
 
         ]);

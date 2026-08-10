@@ -110,7 +110,7 @@ $(document).ready(function(){
 
         $('#formEditUser').attr(
             'action',
-            '/users/' + id
+            '{{ route('users.update', ':id') }}'.replace(':id', id)
         );
 
     });

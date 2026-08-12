@@ -43,26 +43,73 @@
 
                     {{-- Info Peserta --}}
                     <div class="info-peserta-grid">
-                        <div class="info-item">
+
+                        {{-- Nama --}}
+                        <div class="info-item editable-item">
                             <span class="info-label">Nama Lengkap</span>
-                            <strong class="info-value" id="participant-name">-</strong>
+
+                            <strong
+                                class="info-value editable-value"
+                                id="participant-name"
+                                data-field="name"
+                                title="Klik untuk mengedit">
+                                -
+                            </strong>
                         </div>
-                        <div class="info-item">
+
+                        {{-- Participant ID --}}
+                        <div class="info-item editable-item">
                             <span class="info-label">Participant ID</span>
-                            <strong class="info-value text-primary" id="participant-code">-</strong>
+
+                            <strong
+                                class="info-value text-primary editable-value"
+                                id="participant-code"
+                                data-field="participant_code"
+                                title="Klik untuk mengedit">
+                                -
+                            </strong>
                         </div>
-                        <div class="info-item">
+
+                        {{-- Kampus --}}
+                        <div class="info-item editable-item">
                             <span class="info-label">Kampus</span>
-                            <strong class="info-value" id="participant-campus">-</strong>
+
+                            <strong
+                                class="info-value editable-value"
+                                id="participant-campus"
+                                data-field="campus"
+                                title="Klik untuk mengedit">
+                                -
+                            </strong>
                         </div>
-                        <div class="info-item">
+
+                        {{-- Email --}}
+                        <div class="info-item editable-item">
                             <span class="info-label">Email</span>
-                            <strong class="info-value text-truncate" id="participant-email" style="max-width: 150px;">-</strong>
+
+                            <strong
+                                class="info-value editable-value text-truncate"
+                                id="participant-email"
+                                data-field="email"
+                                title="Klik untuk mengedit"
+                                style="max-width: 150px;">
+                                -
+                            </strong>
                         </div>
-                        <div class="info-item">
+
+                        {{-- No HP --}}
+                        <div class="info-item editable-item">
                             <span class="info-label">No HP</span>
-                            <strong class="info-value" id="participant-phone">-</strong>
+
+                            <strong
+                                class="info-value editable-value"
+                                id="participant-phone"
+                                data-field="phone"
+                                title="Klik untuk mengedit">
+                                -
+                            </strong>
                         </div>
+
                     </div>
                     <input type="hidden" id="participant-id" value="">
                     <input type="hidden" id="event-id" value="{{ $event->id }}">
@@ -138,6 +185,55 @@
         </div>
 
     </div>
+</div>
+
+{{-- =========================================
+         ABSENSI PESERTA
+    ========================================= --}}
+    <div class="card modern-card mt-2 mb-4">
+        <div class="card-body">
+
+            <h5 class="font-weight-bold mb-3">
+                <i class="fas fa-user-check text-success mr-2"></i>
+                Absensi Peserta
+            </h5>
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover"
+                    id="attendanceTable"
+                    width="100%">
+
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Participant ID</th>
+                            <th>Nama Lengkap</th>
+                            <th>Kampus</th>
+                            <th width="120" class="text-center">
+                                Status
+                            </th>
+                            <th width="120" class="text-center">
+                                Aksi
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="attendanceTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                Memuat data...
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 <style>
@@ -277,6 +373,35 @@ body, html {
     font-weight: 700;
     letter-spacing: 0.5px;
 }
+
+/* ==========================
+   INLINE EDIT DATA PESERTA
+   ========================== */
+
+.editable-value {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.editable-value:hover {
+    background-color: #e9ecef;
+}
+
+.editable-input {
+    width: 100%;
+    border: 1px solid #4e73df;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 15px;
+    outline: none;
+    background: #fff;
+}
+
+.editable-item.is-editing {
+    background-color: #eef3ff;
+}
 </style>
 @endsection
 
@@ -298,13 +423,30 @@ $('#btn-search').click(function(){
             btnSearch.html('Cari').prop('disabled', false);
 
             if (response.success) {
-                $('#participant-id').val(response.participant.id);
-                $('#participant-name').text(response.participant.name);
-                $('#participant-code').text(response.participant.participant_code);
-                $('#participant-campus').text(response.participant.campus);
-                $('#participant-email').text(response.participant.email);
-                $('#participant-phone').text(response.participant.phone || '-');
-            } else {
+
+            $('#participant-id').val(response.participant.id);
+
+            $('#participant-name')
+                .text(response.participant.name || '-')
+                .data('value', response.participant.name || '');
+
+            $('#participant-code')
+                .text(response.participant.participant_code || '-')
+                .data('value', response.participant.participant_code || '');
+
+            $('#participant-campus')
+                .text(response.participant.campus || '-')
+                .data('value', response.participant.campus || '');
+
+            $('#participant-email')
+                .text(response.participant.email || '-')
+                .data('value', response.participant.email || '');
+
+            $('#participant-phone')
+                .text(response.participant.phone || '-')
+                .data('value', response.participant.phone || '');
+
+        } else {
                 resetInfoPeserta();
                 Swal.fire({ icon: 'warning', title: 'Tidak Ditemukan', text: response.message });
             }
@@ -322,12 +464,163 @@ $('#keyword').keypress(function(e){
 });
 
 function resetInfoPeserta() {
+
     $('#participant-id').val('');
-    $('#participant-name').text('-');
-    $('#participant-code').text('-');
-    $('#participant-campus').text('-');
-    $('#participant-email').text('-');
-    $('#participant-phone').text('-');
+
+    $('.editable-value').each(function () {
+        $(this)
+            .text('-')
+            .removeData('value')
+            .removeClass('editing');
+    });
+
+}
+
+//=====================================
+// INLINE EDIT DATA PESERTA
+//=====================================
+
+$(document).on('click', '.editable-value', function () {
+
+    // Belum ada peserta
+    if ($('#participant-id').val() === '') {
+        return;
+    }
+
+    // Jangan buat input baru kalau sedang edit
+    if ($(this).hasClass('editing')) {
+        return;
+    }
+
+    let element = $(this);
+    let field = element.data('field');
+    let value = element.data('value') || '';
+
+    let inputType = 'text';
+
+    // Email menggunakan input email
+    if (field === 'email') {
+        inputType = 'email';
+    }
+
+    // Buat input
+    let input = $('<input>', {
+        type: inputType,
+        class: 'editable-input',
+        value: value
+    });
+
+    // Simpan nilai awal
+    element
+        .addClass('editing')
+        .data('original-value', value)
+        .hide();
+
+    // Tandai sedang diedit
+    element
+        .closest('.editable-item')
+        .addClass('is-editing');
+
+    // Masukkan input
+    element.after(input);
+
+    // Fokus ke input
+    input.focus();
+
+    // ==========================
+    // ENTER = SIMPAN PERUBAHAN
+    // ==========================
+    input.on('keydown', function (e) {
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            finishInlineEdit(element, input);
+        }
+
+        // ==========================
+        // ESC = BATAL
+        // ==========================
+        if (e.key === 'Escape') {
+            cancelInlineEdit(element, input);
+        }
+
+    });
+
+    // ==========================
+    // KLIK DI LUAR = SELESAI EDIT
+    // ==========================
+    input.on('blur', function () {
+
+        finishInlineEdit(element, input);
+
+    });
+
+});
+
+
+//=====================================
+// SELESAI EDIT
+//=====================================
+
+function finishInlineEdit(element, input) {
+
+    let value = input.val().trim();
+
+    // Tidak boleh kosong
+    if (value === '') {
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data tidak boleh kosong',
+            text: 'Silakan isi data terlebih dahulu.'
+        });
+
+        input.focus();
+
+        return;
+    }
+
+    // Tampilkan nilai baru
+    element
+        .text(value)
+        .data('value', value)
+        .removeClass('editing')
+        .show();
+
+    // Hapus tanda sedang edit
+    element
+        .closest('.editable-item')
+        .removeClass('is-editing');
+
+    // Hapus input
+    input.remove();
+}
+
+
+//=====================================
+// BATAL EDIT
+//=====================================
+
+function cancelInlineEdit(element, input) {
+
+    let originalValue =
+        element.data('original-value') || '';
+
+    // Kembalikan nilai sebelumnya
+    element
+        .text(originalValue || '-')
+        .data('value', originalValue)
+        .removeClass('editing')
+        .show();
+
+    // Hapus tanda sedang edit
+    element
+        .closest('.editable-item')
+        .removeClass('is-editing');
+
+    // Hapus input
+    input.remove();
 }
 
 //=====================================
@@ -429,6 +722,11 @@ $('#btn-submit').click(function () {
         data: {
             _token: "{{ csrf_token() }}",
             participant_id: $('#participant-id').val(),
+            name: $('#participant-name').data('value') || $('#participant-name').text(),
+            participant_code: $('#participant-code').data('value') || $('#participant-code').text(),
+            campus: $('#participant-campus').data('value') || $('#participant-campus').text(),
+            email: $('#participant-email').data('value') || $('#participant-email').text(),
+            phone: $('#participant-phone').data('value') || '',
             event_id: $('#event-id').val(),
             items: items,
             photo: photoData
@@ -446,6 +744,8 @@ $('#btn-submit').click(function () {
         }
     });
 });
+
+
 
 function resetForm(){
     $('#keyword').val('');
@@ -477,16 +777,204 @@ function loadSouvenir(){
     });
 }
 
+// =====================================
+// ABSENSI PESERTA
+// =====================================
+
+function loadAttendance() {
+
+    $.ajax({
+        url: "{{ route('checkin.participants', $event->id) }}",
+        type: "GET",
+
+        success: function (data) {
+
+            let html = '';
+
+            if (data.length === 0) {
+
+                html = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            Belum ada data peserta.
+                        </td>
+                    </tr>
+                `;
+
+            } else {
+
+                data.forEach(function (participant) {
+
+                    let sudahCheckin = participant.checkin !== null;
+
+                    let status = sudahCheckin
+                        ? '<span class="badge badge-success">Hadir</span>'
+                        : '<span class="badge badge-secondary">Belum</span>';
+
+                    let aksi = sudahCheckin
+                        ? `
+                            <button
+                                type="button"
+                                class="btn btn-success btn-sm"
+                                disabled>
+                                <i class="fas fa-check"></i>
+                            </button>
+                          `
+                        : `
+                            <button
+                                type="button"
+                                class="btn btn-primary btn-sm btn-checkin"
+                                data-id="${participant.id}">
+                                CHECK IN
+                            </button>
+                          `;
+
+                    html += `
+                        <tr>
+
+                            <td>
+                                ${participant.participant_code ?? '-'}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${participant.name ?? '-'}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${participant.campus ?? '-'}
+                            </td>
+
+                            <td class="text-center">
+                                ${status}
+                            </td>
+
+                            <td class="text-center">
+                                ${aksi}
+                            </td>
+
+                        </tr>
+                    `;
+
+                });
+
+            }
+
+            $('#attendanceTableBody').html(html);
+
+        },
+
+        error: function (xhr) {
+
+            console.error(xhr);
+
+            $('#attendanceTableBody').html(`
+                <tr>
+                    <td colspan="5" class="text-center text-danger">
+                        Gagal memuat data absensi.
+                    </td>
+                </tr>
+            `);
+
+        }
+    });
+
+}
+
+// =====================================
+// CHECK IN PESERTA
+// =====================================
+
+$(document).on('click', '.btn-checkin', function () {
+
+    let participantId = $(this).data('id');
+    let button = $(this);
+
+    Swal.fire({
+        title: 'Check In Peserta?',
+        text: 'Peserta akan dicatat sebagai hadir.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Check In',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        button
+            .prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            url: "{{ route('checkin.store') }}",
+            type: "POST",
+
+            data: {
+                _token: "{{ csrf_token() }}",
+                participant_id: participantId
+            },
+
+            success: function (response) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: response.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                // Refresh tabel absensi
+                loadAttendance();
+
+            },
+
+            error: function (xhr) {
+
+                button.prop('disabled', false).html('CHECK IN');
+
+                let message = 'Terjadi kesalahan.';
+
+                if (
+                    xhr.responseJSON &&
+                    xhr.responseJSON.message
+                ) {
+                    message = xhr.responseJSON.message;
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: message
+                });
+
+            }
+
+        });
+
+    });
+
+});
+
 $(document).ready(function() {
+
     startCamera();
+
+    // Load data absensi
+    loadAttendance();
 
     // Auto-adjust sidebar agar selalu sama panjang dengan konten
     function samakanTinggi() {
         let tinggiHalaman = $(document).height();
         $('.main-sidebar').css('min-height', tinggiHalaman + 'px');
     }
+
     samakanTinggi();
     setTimeout(samakanTinggi, 1500);
+
 });
 </script>
 @endpush

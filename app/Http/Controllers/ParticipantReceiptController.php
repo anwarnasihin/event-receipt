@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Jenssegers\Agent\Agent;
 
 
@@ -46,35 +47,79 @@ class ParticipantReceiptController extends Controller
     {
         $request->validate([
             'participant_id' => 'required|exists:event_participants,id',
-            'items'          => 'required|array|min:1',
-            'items.*'        => 'exists:event_items,id',
-            'photo'          => 'required|string',
+
+            'name' => 'required|string|max:255',
+
+            'participant_code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('event_participants', 'participant_code')
+                    ->ignore($request->participant_id),
+            ],
+
+            'campus' => 'required|string|max:255',
+
+            'email' => 'required|email|max:255',
+
+            'phone' => 'nullable|string|max:50',
+
+            'items' => 'required|array|min:1',
+            'items.*' => 'exists:event_items,id',
+
+            'photo' => 'required|string',
         ]);
 
-        DB::beginTransaction();
         $agent = new Agent();
+
+        DB::beginTransaction();
 
         try {
 
             // ==========================
+            // CEK PESERTA
+            // ==========================
+
+            $participant = EventParticipant::findOrFail(
+                $request->participant_id
+            );
+
+            // ==========================
             // CEK SUDAH MENERIMA SOUVENIR?
             // ==========================
-            $participant = EventParticipant::findOrFail($request->participant_id);
 
             if ($participant->souvenir_status) {
+
+                DB::rollBack();
 
                 return response()->json([
                     'success' => false,
                     'message' => 'Peserta sudah menerima souvenir.'
                 ], 422);
-
             }
+
+            // ==========================
+            // UPDATE DATA PESERTA
+            // ==========================
+
+            $participant->update([
+                'name' => $request->name,
+                'participant_code' => $request->participant_code,
+                'campus' => $request->campus,
+                'email' => $request->email,
+                'phone' => $request->phone,
+            ]);
 
             // ==========================
             // SIMPAN FOTO
             // ==========================
 
-            $photo = preg_replace('/^data:image\/\w+;base64,/', '', $request->photo);
+            $photo = preg_replace(
+                '/^data:image\/\w+;base64,/',
+                '',
+                $request->photo
+            );
+
             $photo = str_replace(' ', '+', $photo);
 
             $image = base64_decode($photo);
@@ -95,15 +140,25 @@ class ParticipantReceiptController extends Controller
             // ==========================
 
             $receipt = ParticipantReceipt::create([
+
                 'event_participant_id' => $participant->id,
+
                 'user_id' => Auth::id(),
+
                 'photo' => 'receipts/' . $fileName,
+
                 'received_at' => now(),
+
                 'ip_address' => $request->ip(),
+
                 'browser' => $agent->browser(),
+
                 'operating_system' => $agent->platform(),
+
                 'user_agent' => $request->userAgent(),
+
                 'notes' => null
+
             ]);
 
             // ==========================
@@ -116,7 +171,9 @@ class ParticipantReceiptController extends Controller
 
                 // Cek stok
                 if ($item->qty <= 0) {
-                    throw new \Exception("Stok {$item->name} sudah habis.");
+                    throw new \Exception(
+                        "Stok {$item->name} sudah habis."
+                    );
                 }
 
                 ReceiptItem::create([
@@ -125,7 +182,6 @@ class ParticipantReceiptController extends Controller
                 ]);
 
                 $item->decrement('qty');
-
             }
 
             // ==========================
@@ -133,12 +189,13 @@ class ParticipantReceiptController extends Controller
             // ==========================
 
             $participant->update([
-
                 'souvenir_status' => true,
-
                 'souvenir_taken_at' => now()
-
             ]);
+
+            // ==========================
+            // COMMIT
+            // ==========================
 
             DB::commit();
 
@@ -161,7 +218,6 @@ class ParticipantReceiptController extends Controller
                 'message' => $e->getMessage()
 
             ], 500);
-
         }
     }
 

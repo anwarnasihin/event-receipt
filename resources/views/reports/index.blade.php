@@ -122,9 +122,24 @@
                             <td class="text-center">
 
                                 @if($receipt->photo)
-                                    <button type="button" class="btn btn-info btn-sm btn-photo" data-photo="{{ asset('storage/'.$receipt->photo) }}">
+
+                                    {{-- Lihat Foto --}}
+                                    <button
+                                        type="button"
+                                        class="btn btn-info btn-sm btn-photo"
+                                        data-photo="{{ asset('storage/'.$receipt->photo) }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
+
+                                    {{-- Download Foto --}}
+                                    <a
+                                        href="{{ asset('storage/'.$receipt->photo) }}"
+                                        download
+                                        class="btn btn-success btn-sm"
+                                        title="Download Foto">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+
                                 @else
                                     -
                                 @endif

@@ -85,6 +85,20 @@ class ParticipantReceiptController extends Controller
             );
 
             // ==========================
+            // CEK SUDAH CHECK IN?
+            // ==========================
+
+            if (!$participant->checkin()->exists()) {
+
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Peserta belum melakukan Check In.'
+                ], 422);
+            }
+
+            // ==========================
             // CEK SUDAH MENERIMA SOUVENIR?
             // ==========================
 

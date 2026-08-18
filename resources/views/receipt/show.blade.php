@@ -211,7 +211,10 @@
                             <th>Nama Lengkap</th>
                             <th>Kampus</th>
                             <th width="120" class="text-center">
-                                Status
+                                Kehadiran
+                            </th>
+                            <th width="140" class="text-center">
+                                Souvenir
                             </th>
                             <th width="120" class="text-center">
                                 Aksi
@@ -221,7 +224,7 @@
 
                     <tbody id="attendanceTableBody">
                         <tr>
-                            <td colspan="5" class="text-center">
+                            <td colspan="6" class="text-center">
                                 Memuat data...
                             </td>
                         </tr>
@@ -733,9 +736,22 @@ $('#btn-submit').click(function () {
         },
         success: function (response) {
             btnSubmit.prop('disabled', false).html('<i class="fas fa-check-circle mr-2"></i> SERAHKAN SOUVENIR');
-            Swal.fire({ icon: 'success', title: 'Berhasil', text: response.message, timer: 1500, showConfirmButton: false });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
+
             resetForm();
+
+            // Refresh stok souvenir
             loadSouvenir();
+
+            // Refresh status kehadiran & souvenir
+            loadAttendance();
         },
         error: function (xhr) {
             btnSubmit.prop('disabled', false).html('<i class="fas fa-check-circle mr-2"></i> SERAHKAN SOUVENIR');
@@ -811,6 +827,12 @@ function loadAttendance() {
                         ? '<span class="badge badge-success">Hadir</span>'
                         : '<span class="badge badge-secondary">Belum</span>';
 
+                        let sudahAmbilSouvenir = participant.souvenir_status === true;
+
+                        let statusSouvenir = sudahAmbilSouvenir
+                            ? '<span class="badge badge-success">Sudah Diambil</span>'
+                            : '<span class="badge badge-warning">Belum Diambil</span>';
+
                     let aksi = sudahCheckin
                         ? `
                             <button
@@ -848,6 +870,10 @@ function loadAttendance() {
 
                             <td class="text-center">
                                 ${status}
+                            </td>
+
+                            <td class="text-center">
+                                ${statusSouvenir}
                             </td>
 
                             <td class="text-center">

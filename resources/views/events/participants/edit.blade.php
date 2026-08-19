@@ -173,7 +173,8 @@
                     'Bekasi',
                     'Bandung',
                     'Malang',
-                    'Semarang'
+                    'Semarang',
+                    'Medan'
                 ];
             @endphp
 

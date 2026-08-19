@@ -17,6 +17,11 @@ class Event extends Model
         'created_by'
     ];
 
+    protected $casts = [
+        'status' => 'boolean',
+        'event_date' => 'date',
+    ];
+
     public function items()
     {
         return $this->hasMany(EventItem::class);

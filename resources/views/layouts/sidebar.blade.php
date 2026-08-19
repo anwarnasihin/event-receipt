@@ -59,8 +59,10 @@
 
                 <!-- TRANSAKSI -->
                 @if($user->hasAnyRole(['Administrator','Petugas']))
+
                     <li class="nav-header">TRANSAKSI</li>
 
+                    {{-- TANDA TERIMA: Administrator + Petugas --}}
                     <li class="nav-item">
                         <a href="{{ route('receipt.index') }}"
                         class="nav-link {{ request()->routeIs('receipt.*') ? 'active' : '' }}">
@@ -72,13 +74,23 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('checkin.index') }}"
-                        class="nav-link {{ request()->routeIs('checkin.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-user-check"></i>
-                            <p>Absensi</p>
-                        </a>
-                    </li>
+
+                    {{-- ABSENSI: Administrator saja --}}
+                    @if($user->hasRole('Administrator'))
+
+                        <li class="nav-item">
+                            <a href="{{ route('checkin.index') }}"
+                            class="nav-link {{ request()->routeIs('checkin.*') ? 'active' : '' }}">
+
+                                <i class="nav-icon fas fa-user-check"></i>
+
+                                <p>Absensi</p>
+
+                            </a>
+                        </li>
+
+                    @endif
+
                 @endif
 
                 <!-- LAPORAN -->

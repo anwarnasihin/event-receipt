@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['role:Administrator'])->group(function () {
 
+    Route::post('events/{event}/toggle-status',[EventController::class, 'toggleStatus'])->name('events.toggle-status');
+
     Route::resource('events', EventController::class);
 
     Route::resource('events.items', EventItemController::class);

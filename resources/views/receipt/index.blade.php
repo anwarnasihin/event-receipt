@@ -1,30 +1,53 @@
 @extends('layouts.app')
 @section('title', 'Tanda Terima')
 @section('content')
-<form id="eventForm">
-    <div class="mb-3">
-        <label class="form-label">
-            Pilih Event
-        </label>
+@if($events->count() > 0)
+
+    <form id="eventForm">
+
+        <label>Pilih Event</label>
+
         <select
+            name="event"
+            id="event"
             class="form-control"
-            id="event">
-            <option value="">
+            required>
+
+            <option value="" selected disabled>
                 -- Pilih Event --
             </option>
+
             @foreach($events as $event)
                 <option value="{{ $event->id }}">
                     {{ $event->name }}
                 </option>
             @endforeach
+
         </select>
-    </div>
-    <button
-        type="submit"
-        class="btn btn-primary">
-        Masuk
-    </button>
-</form>
+
+        <button type="submit" class="btn btn-primary mt-3">
+            Masuk
+        </button>
+
+    </form>
+
+    @else
+
+        <div class="alert alert-warning mt-3">
+
+            <h5>
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                Tidak Ada Event Aktif
+            </h5>
+
+            <p class="mb-0">
+                Saat ini belum ada event yang aktif.
+                Silakan hubungi Administrator untuk mengaktifkan event terlebih dahulu.
+            </p>
+
+        </div>
+
+    @endif
 @endsection
 @push('scripts')
 <script>

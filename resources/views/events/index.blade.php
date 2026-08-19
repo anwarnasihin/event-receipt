@@ -57,6 +57,26 @@
                             <a href="{{ route('events.edit', $event) }}" class="btn btn-warning btn-sm" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
+
+                            {{-- Aktif / Nonaktif Event --}}
+                            <form action="{{ route('events.toggle-status', $event) }}"
+                                method="POST"
+                                class="d-inline toggle-status-form">
+
+                                @csrf
+
+                                <button type="button"
+                                        class="btn btn-sm {{ $event->status ? 'btn-success' : 'btn-secondary' }} btn-toggle-status"
+                                        title="{{ $event->status ? 'Nonaktifkan Event' : 'Aktifkan Event' }}"
+                                        data-event-name="{{ $event->name }}"
+                                        data-status="{{ $event->status ? 'active' : 'inactive' }}">
+
+                                    <i class="fas {{ $event->status ? 'fa-eye' : 'fa-eye-slash' }}"></i>
+
+                                </button>
+
+                            </form>
+
                             <form action="{{ route('events.destroy', $event) }}" method="POST" class="d-inline delete-form">
                                 @csrf
                                 @method('DELETE')
@@ -120,4 +140,70 @@ $(document).ready(function() {
     });
 });
 </script>
+@endpush
+
+@push('scripts')
+
+<script>
+$(document).on('click', '.btn-toggle-status', function () {
+
+    const button = $(this);
+    const form = button.closest('form');
+    const eventName = button.data('event-name');
+    const status = button.data('status');
+
+    const isActive = status === 'active';
+
+    Swal.fire({
+        icon: isActive ? 'warning' : 'question',
+
+        title: isActive
+            ? 'Nonaktifkan Event?'
+            : 'Aktifkan Event?',
+
+        html: isActive
+            ? `
+                Event <strong>${eventName}</strong> akan
+                <strong>dinonaktifkan</strong>.<br><br>
+                Event ini tidak akan muncul pada menu
+                <strong>Tanda Terima</strong>.
+              `
+            : `
+                Event <strong>${eventName}</strong> akan
+                <strong>diaktifkan</strong> kembali dan tersedia
+                pada menu <strong>Tanda Terima</strong>.
+              `,
+
+        showCancelButton: true,
+
+        confirmButtonText: isActive
+            ? '<i class="fas fa-eye-slash"></i> Ya, Nonaktifkan'
+            : '<i class="fas fa-eye"></i> Ya, Aktifkan',
+
+        cancelButtonText: 'Batal',
+
+        confirmButtonColor: isActive
+            ? '#dc3545'
+            : '#28a745',
+
+        cancelButtonColor: '#6c757d',
+
+        reverseButtons: true,
+
+        focusCancel: true
+
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            // Kirim form
+            form.submit();
+
+        }
+
+    });
+
+});
+</script>
+
 @endpush

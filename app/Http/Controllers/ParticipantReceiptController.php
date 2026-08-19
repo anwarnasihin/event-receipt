@@ -29,7 +29,7 @@ class ParticipantReceiptController extends Controller
      */
     public function index()
     {
-        $events = Event::orderBy('name')->get();
+        $events = Event::where('status', true)->orderBy('name')->get();
 
         return view('receipt.index', compact('events'));
     }

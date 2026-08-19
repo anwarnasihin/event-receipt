@@ -83,6 +83,9 @@ $(function(){
 
 </script>
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Script dari masing-masing halaman -->
 @stack('scripts')
 

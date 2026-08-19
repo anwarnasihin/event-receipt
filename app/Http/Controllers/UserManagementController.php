@@ -34,15 +34,11 @@ class UserManagementController extends Controller
 public function store(StoreUserRequest $request)
 {
     $user = User::create([
-
     'name' => $request->name,
-
     'username' => $request->username,
-
     'email' => $request->email,
-
+    'location' => $request->location,
     'password' => Hash::make($request->password),
-
     ]);
 
     $user->assignRole(
@@ -66,9 +62,10 @@ public function update(
 )
 {
     $data = [
-        'name' => $request->name,
-        'username' => $request->username,
-        'email' => $request->email,
+    'name' => $request->name,
+    'username' => $request->username,
+    'email' => $request->email,
+    'location' => $request->location,
     ];
 
     if ($request->filled('password')) {

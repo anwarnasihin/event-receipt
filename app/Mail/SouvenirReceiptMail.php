@@ -3,9 +3,11 @@
 namespace App\Mail;
 
 use App\Models\ParticipantReceipt;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -24,7 +26,13 @@ class SouvenirReceiptMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $location = $this->receipt->user->location ?? 'BINUS';
+
         return new Envelope(
+            from: new Address(
+                config('mail.from.address'),
+                'LSC BINUS ' . $location
+            ),
             subject: 'Tanda Terima Pengambilan Souvenir',
         );
     }
@@ -45,12 +53,16 @@ class SouvenirReceiptMail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromPath(
-                \Illuminate\Support\Facades\Storage::disk('public')
-                    ->path($this->receipt->photo)
+            Attachment::fromData(
+                fn () => Pdf::loadView(
+                    'receipt.souvenir-pdf',
+                    ['receipt' => $this->receipt]
+                )
+                ->setPaper('a4', 'portrait')
+                ->output(),
+                'Tanda_Terima_Souvenir.pdf'
             )
-            ->as('Bukti_Penyerahan_Souvenir.jpg')
-            ->withMime('image/jpeg'),
+            ->withMime('application/pdf'),
         ];
     }
 }

@@ -53,6 +53,16 @@
                             required>
                     </div>
                     <div class="form-group">
+                        <label>Lokasi</label>
+                        <input
+                            type="text"
+                            id="edit_location"
+                            name="location"
+                            class="form-control"
+                            placeholder="Contoh: Bekasi"
+                            required>
+                    </div>
+                    <div class="form-group">
                         <label>Password Baru</label>
                         <input
                             type="password"

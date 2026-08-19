@@ -40,6 +40,12 @@ class StoreUserRequest extends FormRequest
                 'unique:users,email',
             ],
 
+            'location' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'password' => [
                 'required',
                 'confirmed',
@@ -69,6 +75,10 @@ class StoreUserRequest extends FormRequest
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
+
+            'location.required' => 'Lokasi wajib diisi.',
+            'location.string' => 'Lokasi tidak valid.',
+            'location.max' => 'Lokasi maksimal 255 karakter.',
 
             'password.required' => 'Password wajib diisi.',
             'password.confirmed' => 'Konfirmasi password tidak sama.',

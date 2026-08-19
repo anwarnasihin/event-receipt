@@ -44,7 +44,12 @@ class UpdateUserRequest extends FormRequest
 
                 Rule::unique('users', 'email')
                     ->ignore($this->user),
+            ],
 
+            'location' => [
+                'required',
+                'string',
+                'max:255',
             ],
 
             'password' => [
@@ -76,6 +81,10 @@ class UpdateUserRequest extends FormRequest
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
+
+            'location.required' => 'Lokasi wajib diisi.',
+            'location.string' => 'Lokasi tidak valid.',
+            'location.max' => 'Lokasi maksimal 255 karakter.',
 
             'password.confirmed' => 'Konfirmasi password tidak sama.',
             'password.min' => 'Password minimal 8 karakter.',

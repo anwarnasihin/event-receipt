@@ -6,6 +6,7 @@
             <th width="5%">No</th>
             <th>Nama</th>
             <th>Email</th>
+            <th>Lokasi</th>
             <th width="20%">Role</th>
             <th width="15%" class="text-center">
                 Aksi
@@ -23,6 +24,9 @@
                 </td>
                 <td>
                     {{ $user->email }}
+                </td>
+                <td>
+                    {{ $user->location ?? '-' }}
                 </td>
                 <td>
                     @foreach($user->roles as $role)
@@ -51,6 +55,7 @@
                         data-name="{{ $user->name }}"
                         data-username="{{ $user->username }}"
                         data-email="{{ $user->email }}"
+                        data-location="{{ $user->location }}"
                         data-role="{{ optional($user->roles->first())->name }}"
                         data-toggle="modal"
                         data-target="#modalEditUser">
@@ -101,11 +106,13 @@ $(document).ready(function(){
         let name  = $(this).data('name');
         let username = $(this).data('username');
         let email = $(this).data('email');
+        let location = $(this).data('location');
         let role  = $(this).data('role');
 
         $('#edit_name').val(name);
         $('#edit_username').val(username);
         $('#edit_email').val(email);
+        $('#edit_location').val(location);
         $('#edit_role').val(role);
 
         $('#formEditUser').attr(

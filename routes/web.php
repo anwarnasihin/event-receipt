@@ -68,11 +68,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/receipt/{event}/search',[ParticipantReceiptController::class, 'search'])->name('receipt.search');
     Route::post('/receipt/store',[ParticipantReceiptController::class, 'store'])->name('receipt.store');
     Route::get('/receipt/{event}/items', [ParticipantReceiptController::class, 'items'])->name('receipt.items');
+    // PDF tanda terima souvenir
+    Route::get('/receipt/{receipt}/pdf',[ParticipantReceiptController::class, 'pdf'])->name('receipt.pdf');
     });
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
-    
+
 
     // =====================================
 // ABSENSI

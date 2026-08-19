@@ -9,6 +9,8 @@ use App\Models\EventParticipant;
 use App\Models\EventItem;
 use App\Models\ParticipantReceipt;
 use App\Models\ReceiptItem;
+use App\Mail\SouvenirReceiptMail;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -88,15 +90,15 @@ class ParticipantReceiptController extends Controller
             // CEK SUDAH CHECK IN?
             // ==========================
 
-            if (!$participant->checkin()->exists()) {
+            // if (!$participant->checkin()->exists()) {
 
-                DB::rollBack();
+            //     DB::rollBack();
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Peserta belum melakukan Check In.'
-                ], 422);
-            }
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Peserta belum melakukan Check In.'
+            //     ], 422);
+            // }
 
             // ==========================
             // CEK SUDAH MENERIMA SOUVENIR?
@@ -154,25 +156,15 @@ class ParticipantReceiptController extends Controller
             // ==========================
 
             $receipt = ParticipantReceipt::create([
-
                 'event_participant_id' => $participant->id,
-
                 'user_id' => Auth::id(),
-
                 'photo' => 'receipts/' . $fileName,
-
                 'received_at' => now(),
-
                 'ip_address' => $request->ip(),
-
                 'browser' => $agent->browser(),
-
                 'operating_system' => $agent->platform(),
-
                 'user_agent' => $request->userAgent(),
-
                 'notes' => null
-
             ]);
 
             // ==========================
@@ -213,11 +205,42 @@ class ParticipantReceiptController extends Controller
 
             DB::commit();
 
+            // ==========================
+            // KIRIM EMAIL TANDA TERIMA
+            // ==========================
+
+            $emailSent = false;
+
+            try {
+
+                if (!empty($participant->email)) {
+
+                    $receipt->load([
+                        'participant.event',
+                        'user',
+                        'receiptItems.item'
+                    ]);
+
+                    Mail::to($participant->email)
+                        ->send(new SouvenirReceiptMail($receipt));
+
+                    $emailSent = true;
+                }
+
+            } catch (\Throwable $mailException) {
+
+                // Data souvenir tetap dianggap berhasil diserahkan.
+                // Error email dicatat untuk pengecekan administrator.
+                report($mailException);
+            }
+
             return response()->json([
 
                 'success' => true,
 
-                'message' => 'Souvenir berhasil diserahkan.'
+                'message' => $emailSent
+                    ? 'Souvenir berhasil diserahkan dan tanda terima telah dikirim ke email peserta.'
+                    : 'Souvenir berhasil diserahkan, tetapi tanda terima email belum berhasil dikirim.'
 
             ]);
 
@@ -313,5 +336,25 @@ class ParticipantReceiptController extends Controller
             ->get();
 
         return response()->json($items);
+    }
+
+    public function pdf(ParticipantReceipt $receipt)
+    {
+        $receipt->load([
+            'participant.event',
+            'user',
+            'receiptItems.item',
+        ]);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'receipt.souvenir-pdf',
+            compact('receipt')
+        );
+
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->stream(
+            'Tanda_Terima_Souvenir.pdf'
+        );
     }
 }

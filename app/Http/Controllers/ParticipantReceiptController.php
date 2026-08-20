@@ -46,8 +46,8 @@ class ParticipantReceiptController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
+{
+    $validator = Validator::make($request->all(), [
         'participant_id' => 'required|exists:event_participants,id',
         'name' => 'required|string|max:255',
         'participant_code' => [
@@ -73,191 +73,138 @@ class ParticipantReceiptController extends Controller
         ], 422);
     }
 
-        $agent = new Agent();
+    $agent = new Agent();
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
+    try {
 
-            // ==========================
-            // CEK PESERTA
-            // ==========================
+        $participant = EventParticipant::findOrFail(
+            $request->participant_id
+        );
 
-            $participant = EventParticipant::findOrFail(
-                $request->participant_id
-            );
-
-            // ==========================
-            // CEK SUDAH CHECK IN?
-            // ==========================
-
-            // if (!$participant->checkin()->exists()) {
-
-            //     DB::rollBack();
-
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'Peserta belum melakukan Check In.'
-            //     ], 422);
-            // }
-
-            // ==========================
-            // CEK SUDAH MENERIMA SOUVENIR?
-            // ==========================
-
-            if ($participant->souvenir_status) {
-
-                DB::rollBack();
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Peserta sudah menerima souvenir.'
-                ], 422);
-            }
-
-            // ==========================
-            // UPDATE DATA PESERTA
-            // ==========================
-
-            $participant->update([
-                'name' => $request->name,
-                'participant_code' => $request->participant_code,
-                'campus' => $request->campus,
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ]);
-
-            // ==========================
-            // SIMPAN FOTO
-            // ==========================
-
-            $photo = preg_replace(
-                '/^data:image\/\w+;base64,/',
-                '',
-                $request->photo
-            );
-
-            $photo = str_replace(' ', '+', $photo);
-
-            $image = base64_decode($photo);
-
-            $fileName = 'receipt_' .
-                now()->format('YmdHis') .
-                '_' .
-                Str::random(8) .
-                '.jpg';
-
-            Storage::disk('public')->put(
-                'receipts/' . $fileName,
-                $image
-            );
-
-            // ==========================
-            // SIMPAN RECEIPT
-            // ==========================
-
-            $receipt = ParticipantReceipt::create([
-                'event_participant_id' => $participant->id,
-                'user_id' => Auth::id(),
-                'photo' => 'receipts/' . $fileName,
-                'received_at' => now(),
-                'ip_address' => $request->ip(),
-                'browser' => $agent->browser(),
-                'operating_system' => $agent->platform(),
-                'user_agent' => $request->userAgent(),
-                'notes' => null
-            ]);
-
-            // ==========================
-            // SIMPAN DETAIL SOUVENIR
-            // ==========================
-
-            foreach ($request->items as $itemId) {
-
-                $item = EventItem::findOrFail($itemId);
-
-                // Cek stok
-                if ($item->qty <= 0) {
-                    throw new \Exception(
-                        "Stok {$item->name} sudah habis."
-                    );
-                }
-
-                ReceiptItem::create([
-                    'participant_receipt_id' => $receipt->id,
-                    'event_item_id' => $itemId
-                ]);
-
-                $item->decrement('qty');
-            }
-
-            // ==========================
-            // UPDATE STATUS PESERTA
-            // ==========================
-
-            $participant->update([
-                'souvenir_status' => true,
-                'souvenir_taken_at' => now()
-            ]);
-
-            // ==========================
-            // COMMIT
-            // ==========================
-
-            DB::commit();
-
-            // ==========================
-            // KIRIM EMAIL TANDA TERIMA
-            // ==========================
-
-            $emailSent = false;
-
-            try {
-
-                if (!empty($participant->email)) {
-
-                    $receipt->load([
-                        'participant.event',
-                        'user',
-                        'receiptItems.item'
-                    ]);
-
-                    Mail::to($participant->email)
-                        ->send(new SouvenirReceiptMail($receipt));
-
-                    $emailSent = true;
-                }
-
-            } catch (\Throwable $mailException) {
-
-                // Data souvenir tetap dianggap berhasil diserahkan.
-                // Error email dicatat untuk pengecekan administrator.
-                report($mailException);
-            }
-
-            return response()->json([
-
-                'success' => true,
-
-                'message' => $emailSent
-                    ? 'Souvenir berhasil diserahkan dan tanda terima telah dikirim ke email peserta.'
-                    : 'Souvenir berhasil diserahkan, tetapi tanda terima email belum berhasil dikirim.'
-
-            ]);
-
-        } catch (\Exception $e) {
-
+        if ($participant->souvenir_status) {
             DB::rollBack();
 
             return response()->json([
-
                 'success' => false,
-
-                'message' => $e->getMessage()
-
-            ], 500);
+                'message' => 'Peserta sudah menerima souvenir.'
+            ], 422);
         }
+
+        $participant->update([
+            'name' => $request->name,
+            'participant_code' => $request->participant_code,
+            'campus' => $request->campus,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        $photo = preg_replace(
+            '/^data:image\/\w+;base64,/',
+            '',
+            $request->photo
+        );
+
+        $photo = str_replace(' ', '+', $photo);
+
+        $image = base64_decode($photo);
+
+        if ($image === false) {
+            throw new \Exception('Foto tidak dapat diproses.');
+        }
+
+        $fileName =
+            'receipt_' .
+            now()->format('YmdHis') .
+            '_' .
+            Str::random(8) .
+            '.jpg';
+
+        Storage::disk('public')->put(
+            'receipts/' . $fileName,
+            $image
+        );
+
+        $receipt = ParticipantReceipt::create([
+            'event_participant_id' => $participant->id,
+            'user_id' => Auth::id(),
+            'photo' => 'receipts/' . $fileName,
+            'received_at' => now(),
+            'ip_address' => $request->ip(),
+            'browser' => $agent->browser(),
+            'operating_system' => $agent->platform(),
+            'user_agent' => $request->userAgent(),
+            'notes' => null,
+        ]);
+
+        foreach ($request->items as $itemId) {
+
+            $item = EventItem::findOrFail($itemId);
+
+            if ($item->qty <= 0) {
+                throw new \Exception(
+                    "Stok {$item->name} sudah habis."
+                );
+            }
+
+            ReceiptItem::create([
+                'participant_receipt_id' => $receipt->id,
+                'event_item_id' => $itemId,
+            ]);
+
+            $item->decrement('qty');
+        }
+
+        $participant->update([
+            'souvenir_status' => true,
+            'souvenir_taken_at' => now(),
+        ]);
+
+        DB::commit();
+
+        $emailSent = false;
+
+        try {
+
+            if (!empty($participant->email)) {
+
+                $receipt->load([
+                    'participant.event',
+                    'user',
+                    'receiptItems.item'
+                ]);
+
+                Mail::to($participant->email)
+                    ->send(
+                        new SouvenirReceiptMail($receipt)
+                    );
+
+                $emailSent = true;
+            }
+
+        } catch (\Throwable $mailException) {
+
+            report($mailException);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $emailSent
+                ? 'Souvenir berhasil diserahkan dan tanda terima telah dikirim ke email peserta.'
+                : 'Souvenir berhasil diserahkan, tetapi tanda terima email belum berhasil dikirim.',
+        ]);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], 500);
     }
+}
 
     /**
      * Display the specified resource.

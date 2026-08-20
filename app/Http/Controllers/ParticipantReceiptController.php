@@ -66,12 +66,15 @@ class ParticipantReceiptController extends Controller
     ]);
 
     if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Data yang dikirim tidak valid.',
-            'errors' => $validator->errors(),
-        ], 422);
-    }
+
+    $errors = $validator->errors()->all();
+
+    return response()->json([
+        'success' => false,
+        'message' => implode(' | ', $errors),
+        'errors' => $validator->errors(),
+    ], 422);
+}
 
     $agent = new Agent();
 

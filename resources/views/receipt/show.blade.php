@@ -1347,28 +1347,21 @@ function submitSouvenir() {
     // KIRIM KE SERVER
 
     fetch(
+    "{{ route('receipt.store') }}",
+    {
+        method: 'POST',
 
-        "{{ route('receipt.store') }}",
+        body: formData,
 
-        {
-
-            method: 'POST',
-
-            body: formData,
-
-            headers: {
-
-                'Accept':
-                    'application/json',
-
-                'X-Requested-With':
-                    'XMLHttpRequest'
-
-            }
-
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content')
         }
-
-    )
+    }
+)
 
     .then(function(response) {
 

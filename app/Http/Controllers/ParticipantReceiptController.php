@@ -11,7 +11,7 @@ use App\Models\ParticipantReceipt;
 use App\Models\ReceiptItem;
 use App\Mail\SouvenirReceiptMail;
 use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -47,30 +47,31 @@ class ParticipantReceiptController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'participant_id' => 'required|exists:event_participants,id',
+        $validator = Validator::make($request->all(), [
+        'participant_id' => 'required|exists:event_participants,id',
+        'name' => 'required|string|max:255',
+        'participant_code' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('event_participants', 'participant_code')
+                ->ignore($request->participant_id),
+        ],
+        'campus' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:50',
+        'items' => 'required|array|min:1',
+        'items.*' => 'exists:event_items,id',
+        'photo' => 'required|string',
+    ]);
 
-            'name' => 'required|string|max:255',
-
-            'participant_code' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('event_participants', 'participant_code')
-                    ->ignore($request->participant_id),
-            ],
-
-            'campus' => 'required|string|max:255',
-
-            'email' => 'required|email|max:255',
-
-            'phone' => 'nullable|string|max:50',
-
-            'items' => 'required|array|min:1',
-            'items.*' => 'exists:event_items,id',
-
-            'photo' => 'required|string',
-        ]);
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data yang dikirim tidak valid.',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
 
         $agent = new Agent();
 

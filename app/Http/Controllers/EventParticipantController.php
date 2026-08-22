@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
+use App\Models\ParticipantReceipt;
+use App\Mail\SouvenirReceiptMail;
+use Illuminate\Support\Facades\Mail;
+
 class EventParticipantController extends Controller
 {
     /**
@@ -158,6 +162,73 @@ class EventParticipantController extends Controller
             ->route('events.participants.index', $event)
             ->with('success', 'Peserta berhasil diupdate.');
     }
+
+    //update 22/08/2026
+    /**
+ * Kirim ulang tanda terima souvenir
+ */
+public function resendReceipt(Event $event, EventParticipant $participant)
+{
+    // Pastikan peserta memang milik event tersebut
+    if ($participant->event_id != $event->id) {
+        abort(404);
+    }
+
+    // Cari tanda terima souvenir terakhir milik peserta
+    $receipt = ParticipantReceipt::where(
+        'event_participant_id',
+        $participant->id
+    )
+    ->latest('id')
+    ->first();
+
+    if (!$receipt) {
+        return redirect()
+            ->back()
+            ->with('error', 'Tanda terima souvenir peserta belum ditemukan.');
+    }
+
+    if (empty($participant->email)) {
+        return redirect()
+            ->back()
+            ->with('error', 'Email peserta belum tersedia.');
+    }
+
+    try {
+
+        // Load seluruh data yang dibutuhkan email
+        $receipt->load([
+            'participant.event',
+            'user',
+            'receiptItems.item'
+        ]);
+
+        // Kirim ulang email
+        Mail::to($participant->email)
+            ->send(new SouvenirReceiptMail($receipt));
+
+        return redirect()
+            ->back()
+            ->with(
+                'success',
+                'Tanda terima berhasil dikirim ulang ke ' .
+                $participant->email
+            );
+
+    } catch (\Throwable $e) {
+
+        report($e);
+
+        return redirect()
+            ->back()
+            ->with(
+                'error',
+                'Gagal mengirim ulang tanda terima. Silakan coba lagi.'
+            );
+    }
+}
+
+//end update 22/08/2026
 
     /**
      * Delete Participant

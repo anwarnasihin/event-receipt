@@ -50,6 +50,13 @@ Route::middleware(['auth'])->group(function () {
         EventParticipantController::class
     );
 
+    //update 22/08/2026
+    Route::post(
+    'events/{event}/participants/{participant}/resend-receipt',
+        [EventParticipantController::class, 'resendReceipt']
+    )->name('events.participants.resend-receipt');
+    //end update 22/08/2026
+
 });
 
     Route::middleware(['role:Administrator'])->group(function () {

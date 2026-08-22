@@ -117,6 +117,24 @@
                                 <i class="fas fa-edit"></i>
                             </a>
 
+                            {{-- update 22/08/2026 --}}
+                            <form action="{{ route('events.participants.resend-receipt', [$event, $participant]) }}"
+                                method="POST"
+                                class="d-inline resend-receipt-form">
+
+                                @csrf
+
+                                <button type="submit"
+                                        class="btn btn-primary btn-sm"
+                                        title="Kirim Ulang Tanda Terima">
+
+                                    <i class="fas fa-envelope"></i>
+
+                                </button>
+
+                            </form>
+                            {{-- end update 22/08/2026 --}}
+
                             <!-- Form Delete diganti dengan class untuk SweetAlert -->
                             <form action="{{ route('events.participants.destroy', [$event, $participant]) }}" method="POST" class="d-inline delete-form">
                                 @csrf
@@ -140,9 +158,13 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
+
 <script>
 $(document).ready(function () {
-    // Inisialisasi DataTables
+
+    // ==========================================
+    // DATATABLES
+    // ==========================================
     $('#participantTable').DataTable({
         "responsive": true,
         "autoWidth": false,
@@ -160,10 +182,16 @@ $(document).ready(function () {
         }
     });
 
-    // Mengganti onclick return confirm menjadi SweetAlert2
+
+    // ==========================================
+    // HAPUS PESERTA
+    // ==========================================
     $('.delete-form').submit(function(e) {
+
         e.preventDefault();
+
         let form = this;
+
         Swal.fire({
             title: 'Hapus Peserta?',
             text: 'Yakin ingin menghapus peserta ini? Data tidak dapat dikembalikan.',
@@ -174,11 +202,50 @@ $(document).ready(function () {
             confirmButtonText: 'Ya, Hapus',
             cancelButtonText: 'Batal'
         }).then((result) => {
+
             if (result.isConfirmed) {
                 form.submit();
             }
+
         });
+
     });
+
+
+    // ==========================================
+    // KIRIM ULANG TANDA TERIMA
+    // ==========================================
+    $('.resend-receipt-form').submit(function(e) {
+
+        e.preventDefault();
+
+        let form = this;
+
+        Swal.fire({
+            title: 'Kirim Ulang Tanda Terima?',
+            text: 'Email tanda terima akan dikirim ulang ke email peserta dengan data terbaru.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#007bff',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Kirim',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                form.submit();
+
+            }
+
+        });
+
+    });
+
 });
 </script>
+
 @endpush
+
+
+

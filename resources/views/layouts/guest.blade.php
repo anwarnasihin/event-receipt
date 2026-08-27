@@ -33,8 +33,8 @@
                 <div class="mb-6">
                     <img src="{{ asset('images/BINUSUNIVERSITYWhite.png') }}"
                         alt="Logo Binus"
-                        class="w-80 sm:w-96 h-auto object-contain drop-shadow-lg"
-                        style="max-width: 480px;">
+                        class="h-auto object-contain drop-shadow-lg"
+                        style="width: 250px; max-width: 250px;">
                 </div>
 
                 <!-- Teks Judul -->

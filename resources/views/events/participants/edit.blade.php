@@ -21,7 +21,8 @@
     </div>
 
     <form method="POST"
-          action="{{ route('events.participants.update', [$event, $participant]) }}">
+      action="{{ route('events.participants.update', [$event, $participant]) }}"
+      enctype="multipart/form-data">
 
         @csrf
         @method('PUT')
@@ -261,6 +262,70 @@
                     name="notes"
                     rows="3"
                     class="form-control @error('notes') is-invalid @enderror">{{ old('notes', $participant->notes) }}</textarea>
+
+            </div>
+
+            {{-- FOTO BUKTI PENYERAHAN --}}
+            <div class="form-group">
+
+                <label>
+                    Foto Bukti Penyerahan
+                </label>
+
+                @php
+                    $latestReceipt = $participant->receipts()->latest('id')->first();
+                @endphp
+
+                @if($latestReceipt && $latestReceipt->photo)
+
+                    <div class="mb-3">
+
+                        <p class="mb-2">
+                            <small class="text-muted">
+                                Foto bukti penyerahan saat ini:
+                            </small>
+                        </p>
+
+                        <img
+                            src="{{ asset('storage/' . $latestReceipt->photo) }}"
+                            alt="Foto Bukti Penyerahan"
+                            style="
+                                max-width:300px;
+                                max-height:220px;
+                                object-fit:contain;
+                                border:1px solid #ddd;
+                                border-radius:6px;
+                                padding:5px;
+                            "
+                        >
+
+                    </div>
+
+                @else
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        Foto bukti penyerahan belum tersedia.
+                    </div>
+
+                @endif
+
+                <input
+                    type="file"
+                    name="photo"
+                    accept="image/jpeg,image/png,image/jpg"
+                    class="form-control @error('photo') is-invalid @enderror">
+
+                @error('photo')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+
+                <small class="form-text text-muted">
+                    Upload foto baru jika foto bukti penyerahan sebelumnya salah.
+                    Format JPG, JPEG, atau PNG. Maksimal 5 MB.
+                </small>
 
             </div>
 

@@ -7,6 +7,7 @@ use App\Models\EventParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\ParticipantReceipt;
 use App\Mail\SouvenirReceiptMail;
@@ -128,9 +129,9 @@ class EventParticipantController extends Controller
     }
 
     /**
-     * Update Participant
-     */
-    public function update(Request $request, Event $event, EventParticipant $participant)
+ * Update Participant
+ */
+    public function update(Request $request,Event $event,EventParticipant $participant)
     {
         $request->validate([
             'participant_code' => 'required|max:50',
@@ -143,7 +144,16 @@ class EventParticipantController extends Controller
             'position'         => 'nullable|max:150',
             'participant_type' => 'required',
             'notes'            => 'nullable|string',
+
+            // Foto hanya wajib jika ingin mengganti foto
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE DATA PESERTA
+        |--------------------------------------------------------------------------
+        */
 
         $participant->update([
             'participant_code' => $request->participant_code,
@@ -158,9 +168,52 @@ class EventParticipantController extends Controller
             'notes'            => $request->notes,
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | GANTI FOTO BUKTI PENYERAHAN
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('photo')) {
+
+            // Ambil tanda terima terakhir peserta
+            $receipt = ParticipantReceipt::where(
+                'event_participant_id',
+                $participant->id
+            )
+            ->latest('id')
+            ->first();
+
+            if ($receipt) {
+
+                // Simpan foto baru terlebih dahulu
+                $newPhoto = $request->file('photo')
+                    ->store('receipts', 'public');
+
+                // Simpan path foto lama
+                $oldPhoto = $receipt->photo;
+
+                // Update receipt dengan foto baru
+                $receipt->update([
+                    'photo' => $newPhoto,
+                ]);
+
+                // Hapus foto lama setelah foto baru berhasil disimpan
+                if (
+                    $oldPhoto &&
+                    Storage::disk('public')->exists($oldPhoto)
+                ) {
+                    Storage::disk('public')->delete($oldPhoto);
+                }
+            }
+        }
+
         return redirect()
             ->route('events.participants.index', $event)
-            ->with('success', 'Peserta berhasil diupdate.');
+            ->with(
+                'success',
+                'Data peserta berhasil diupdate.'
+            );
     }
 
     //update 22/08/2026

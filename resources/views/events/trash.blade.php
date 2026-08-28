@@ -200,49 +200,43 @@
 
                                     <td class="text-center">
 
-                                        {{-- RESTORE --}}
-                                        <form
-                                            action="{{ route('events.restore', $event->id) }}"
-                                            method="POST"
-                                            class="d-inline restore-form">
+                                        <div style="
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                            gap: 5px;
+                                            white-space: nowrap;">
 
-                                            @csrf
+                                            {{-- Pulihkan --}}
+                                            <form method="POST"
+                                                action="{{ route('events.restore', $event->id) }}"
+                                                style="margin: 0;">
+                                                @csrf
 
-                                            <button
-                                                type="submit"
-                                                class="btn btn-success btn-sm"
-                                                title="Pulihkan Event">
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm"
+                                                        title="Pulihkan Event">
+                                                    <i class="fas fa-undo"></i>
+                                                    Pulihkan
+                                                </button>
+                                            </form>
 
-                                                <i class="fas fa-undo"></i>
+                                            {{-- Hapus Permanen --}}
+                                            <form method="POST"
+                                                action="{{ route('events.force-delete', $event->id) }}"
+                                                style="margin: 0;">
+                                                @csrf
+                                                @method('DELETE')
 
-                                                Pulihkan
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm"
+                                                        title="Hapus Permanen">
+                                                    <i class="fas fa-trash"></i>
+                                                    Hapus Permanen
+                                                </button>
+                                            </form>
 
-                                            </button>
-
-                                        </form>
-
-
-                                        {{-- HARD DELETE --}}
-                                        <form
-                                            action="{{ route('events.force-delete', $event->id) }}"
-                                            method="POST"
-                                            class="d-inline force-delete-form">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger btn-sm"
-                                                title="Hapus Permanen">
-
-                                                <i class="fas fa-trash-alt"></i>
-
-                                                Hapus Permanen
-
-                                            </button>
-
-                                        </form>
+                                        </div>
 
                                     </td>
 

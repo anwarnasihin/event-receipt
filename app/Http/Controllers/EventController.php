@@ -11,7 +11,9 @@ class EventController extends Controller
 {
     private function generateCode()
     {
-        $lastEvent = Event::orderBy('id', 'desc')->first();
+        $lastEvent = Event::withTrashed()
+            ->orderBy('id', 'desc')
+            ->first();
 
         if (!$lastEvent) {
             return 'EVT0001';

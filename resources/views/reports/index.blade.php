@@ -123,26 +123,38 @@
 
                                 @if($receipt->photo)
 
-                                    {{-- Lihat Foto --}}
-                                    <button
-                                        type="button"
-                                        class="btn btn-info btn-sm btn-photo"
-                                        data-photo="{{ asset('storage/'.$receipt->photo) }}">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
+                                    <div style="
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        gap: 5px;
+                                        white-space: nowrap;
+                                    ">
 
-                                    {{-- Download Foto --}}
-                                    <a
-                                        href="{{ asset('storage/'.$receipt->photo) }}"
-                                        download
-                                        class="btn btn-success btn-sm"
-                                        title="Download Foto">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+                                        {{-- Lihat Foto --}}
+                                        <button
+                                            type="button"
+                                            class="btn btn-info btn-sm btn-photo"
+                                            data-photo="{{ asset('storage/'.$receipt->photo) }}"
+                                            title="Lihat Foto">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+
+                                        {{-- Download Foto --}}
+                                        <a
+                                            href="{{ asset('storage/'.$receipt->photo) }}"
+                                            download
+                                            class="btn btn-success btn-sm"
+                                            title="Download Foto">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+
+                                    </div>
 
                                 @else
                                     -
                                 @endif
+
                             </td>
                         </tr>
                     @empty

@@ -73,6 +73,7 @@
                         <tr>
                             <th width="50">No</th>
                             <th>Participant ID</th>
+                            <th>Nama Event</th>
                             <th>Nama</th>
                             <th>Campus</th>
                             <th>Souvenir</th>
@@ -87,10 +88,9 @@
                     <tbody>
                     @forelse($receipts as $receipt)
                         <tr>
-                            <td class="text-center">
-                                {{ $loop->iteration + (($receipts->currentPage()-1) * $receipts->perPage()) }}
-                            </td>
+                            <td class="text-center">{{ $loop->iteration + (($receipts->currentPage()-1) * $receipts->perPage()) }}</td>
                             <td>{{ optional($receipt->participant)->participant_code }}</td>
+                            <td>{{ optional(optional($receipt->participant)->event)->name ?? '-' }}</td>
                             <td>{{ optional($receipt->participant)->name }}</td>
                             <td>{{ optional($receipt->participant)->campus }}</td>
                             <td>
@@ -147,7 +147,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
+                            <td colspan="{{ auth()->user()->hasRole('Administrator') ? 10 : 9 }}"class="text-center text-muted py-4">
                                 <i class="fas fa-folder-open fa-2x mb-2"></i><br>
                                 Tidak ada data yang ditemukan.
                             </td>

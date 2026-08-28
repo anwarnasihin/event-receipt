@@ -57,14 +57,18 @@ Route::middleware(['auth'])->group(function () {
     )->name('events.participants.resend-receipt');
     //end update 22/08/2026
 
-});
+    });
 
     Route::middleware(['role:Administrator'])->group(function () {
+
+    Route::get('/events-trash',[EventController::class, 'trash'])->name('events.trash');
+    Route::post('/events-trash/{id}/restore',[EventController::class, 'restore'])->name('events.restore');
+    Route::delete('/events-trash/{id}/force-delete',[EventController::class, 'forceDelete'])->name('events.force-delete');
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
-});
+    });
 
     Route::get('/qr-test', function () {
         return QrCode::size(250)

@@ -16,6 +16,14 @@
         <a href="{{ route('events.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Tambah Event
         </a>
+        
+        <a href="{{ route('events.trash') }}"
+        class="btn btn-danger">
+
+            <i class="fas fa-trash-alt"></i>
+            Recycle Bin
+
+        </a>
     </div>
 
     <div class="card-body">

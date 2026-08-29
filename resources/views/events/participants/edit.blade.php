@@ -191,7 +191,7 @@
 
                     @foreach($campuses as $campus)
                         <option value="{{ $campus }}"
-                            {{ old('campus', $participant->campus) == $campus ? 'selected' : '' }}>
+                            {{ strtolower(trim(old('campus', $participant->campus))) === strtolower(trim($campus)) ? 'selected' : '' }}>
                             {{ $campus }}
                         </option>
                     @endforeach

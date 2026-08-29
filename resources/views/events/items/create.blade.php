@@ -48,11 +48,7 @@
 
                     </label>
 
-                    <input
-                        type="number"
-                        name="qty"
-                        value="0"
-                        class="form-control">
+                    <input type="number" name="qty" class="form-control @error('qty') is-invalid @enderror" value="{{ old('qty', 0) }}" min="0" step="1" required>
 
                 </div>
 

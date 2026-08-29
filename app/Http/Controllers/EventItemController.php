@@ -44,9 +44,9 @@ class EventItemController extends Controller
     public function store(Request $request, Event $event)
     {
         $request->validate([
-        'name' => 'required|max:100',
-        'qty'  => 'required|integer|min:0',
-    ]);
+            'name' => 'required|string|max:255',
+            'qty' => 'required|integer|min:0',
+        ]);
 
     EventItem::create([
         'event_id' => $event->id,
@@ -75,9 +75,9 @@ class EventItemController extends Controller
     public function update(Request $request, Event $event, EventItem $item)
     {
          $request->validate([
-        'name' => 'required|max:100',
-        'qty'  => 'required|integer|min:0',
-    ]);
+            'name' => 'required|string|max:255',
+            'qty' => 'required|integer|min:0',
+        ]);
 
     $item->update([
         'name'   => $request->name,

@@ -40,18 +40,24 @@
 
                 </div>
 
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Qty
-                    </label>
+                <div class="form-group">
+                    <label>Qty</label>
 
                     <input
                         type="number"
                         name="qty"
-                        value="{{ $item->qty }}"
-                        class="form-control">
+                        class="form-control @error('qty') is-invalid @enderror"
+                        value="{{ old('qty', $item->qty) }}"
+                        min="0"
+                        step="1"
+                        required
+                    >
 
+                    @error('qty')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="form-check">

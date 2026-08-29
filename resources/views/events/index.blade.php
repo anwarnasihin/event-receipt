@@ -16,7 +16,7 @@
         <a href="{{ route('events.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Tambah Event
         </a>
-        
+
         <a href="{{ route('events.trash') }}"
         class="btn btn-danger">
 
@@ -133,17 +133,47 @@ $(document).ready(function() {
         let form = this;
         Swal.fire({
             title: 'Hapus Event?',
-            text: 'Data Event beserta Item di dalamnya akan ikut terhapus.',
+            html: `
+                <div style="font-size:16px; line-height:1.6;">
+
+                    <div style="
+                        font-size:45px;
+                        color:#f0ad4e;
+                        margin-bottom:10px;
+                    ">
+                        ⚠️
+                    </div>
+
+                    <strong style="
+                        color:#dc3545;
+                        font-size:18px;">
+                        PERHATIAN!
+                    </strong>
+
+                    <br>
+
+                    Event ini akan dipindahkan ke
+                    <strong>Recycle Bin</strong>.
+
+                    <br>
+
+                    Anda dapat memulihkan Event melalui
+                    <strong>Recycle Bin</strong> kapan saja.
+
+                </div>
+            `,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Hapus',
+            confirmButtonText: 'Ya, Hapus Event',
             cancelButtonText: 'Batal'
-        }).then((result) => {
+        }).then(function(result) {
+
             if (result.isConfirmed) {
                 form.submit();
             }
+
         });
     });
 });

@@ -11,7 +11,7 @@
 
         <div>
             <h3 class="mb-1">
-                <i class="fas fa-trash-alt text-danger"></i>
+                <span style="font-size: 28px;">♻️</span>
                 Recycle Bin Event
             </h3>
 
@@ -223,17 +223,18 @@
 
                                             {{-- Hapus Permanen --}}
                                             <form method="POST"
-                                                action="{{ route('events.force-delete', $event->id) }}"
-                                                style="margin: 0;">
+                                                action="{{ route('events.force-delete', $event) }}"
+                                                class="form-delete-permanent">
+
                                                 @csrf
                                                 @method('DELETE')
 
                                                 <button type="submit"
-                                                        class="btn btn-danger btn-sm"
-                                                        title="Hapus Permanen">
+                                                        class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i>
                                                     Hapus Permanen
                                                 </button>
+
                                             </form>
 
                                         </div>
@@ -274,6 +275,53 @@
 
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.form-delete-permanent')
+            .forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Hapus Permanen?',
+                        html: `
+                            <div style="font-size:16px;">
+                                <div style="font-size:45px; color:#dc3545; margin-bottom:10px;">
+                                    ⚠️
+                                </div>
+
+                                <strong style="color:#dc3545;">
+                                    PERINGATAN!
+                                </strong>
+
+                                <br><br>
+
+                                Event, peserta, data check-in,
+                                tanda terima, detail souvenir,
+                                dan foto receipt akan dihapus permanen.
+
+                                <br><br>
+
+                                <strong style="color:#dc3545;">
+                                    Data tidak dapat dipulihkan kembali.
+                                </strong>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus Permanen',
+                        cancelButtonText: 'Batal'
+                    }).then(function (result) {
+
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+    });
+</script>
 @endsection
 
 

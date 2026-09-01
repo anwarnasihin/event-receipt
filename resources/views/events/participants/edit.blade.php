@@ -170,6 +170,7 @@
                 $campuses = [
                     'Kemanggisan',
                     'Senayan',
+                    'Kijang',
                     'Alam Sutera',
                     'Bekasi',
                     'Bandung',

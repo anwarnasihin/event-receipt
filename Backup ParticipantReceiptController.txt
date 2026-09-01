@@ -1,3 +1,4 @@
+Backup ParticipantReceiptController.php :
 <?php
 
 namespace App\Http\Controllers;
@@ -51,12 +52,7 @@ class ParticipantReceiptController extends Controller
     'participant_id' => 'required|exists:event_participants,id',
     'name' => 'required|string|max:255',
     'participant_code' => 'required|string|max:255',
-    'campus' => [
-    'required',
-    'string',
-    'max:255',
-    Rule::notIn(['-']),
-    ],
+    'campus' => 'required|string|max:255',
     'email' => 'required|email|max:255',
     'phone' => 'nullable|string|max:50',
     'items' => 'required|array|min:1',
@@ -211,32 +207,19 @@ class ParticipantReceiptController extends Controller
     /**
      * Display the specified resource.
      */
-
-    // start update 31/08/2026
     public function show(Event $event)
     {
         $items = EventItem::where('event_id', $event->id)
             ->where('active', 1)
-            ->where('qty', '>', 0)
-            ->orderBy('name')
-            ->get();
-
-        // Ambil semua peserta pada event ini
-        $participants = EventParticipant::where('event_id', $event->id)
-            ->with([
-                'receipts' => function ($query) {
-                    $query->latest();
-                }
-            ])
+            ->where('qty', '>', 0)   // <-- Tambahkan ini
             ->orderBy('name')
             ->get();
 
         return view(
             'receipt.show',
-            compact('event', 'items', 'participants')
+            compact('event', 'items')
         );
     }
-    // end update 31/08/2026
 
     /**
      * Show the form for editing the specified resource.

@@ -40,8 +40,7 @@
 
 
     {{-- BARIS UTAMA --}}
-    <div class="row align-items-stretch">
-
+    <div class="row">
 
         {{-- =========================================
              KOLOM KIRI
@@ -135,19 +134,53 @@
 
                         {{-- KAMPUS --}}
                         <div class="info-item">
-
                             <span class="info-label">
-                                Kampus
+                                Base Kampus Dosen
                             </span>
+                            <select
+                                id="participant-campus"
+                                class="form-control form-control-sm participant-campus-select">
 
-                            <strong
-                                class="info-value"
-                                id="participant-campus">
+                                <option value="">
+                                    -- Pilih Kampus --
+                                </option>
 
-                                -
+                                <option value="Kemanggisan">
+                                    Kemanggisan
+                                </option>
 
-                            </strong>
+                                <option value="Senayan">
+                                    Senayan
+                                </option>
 
+                                <option value="Kijang">
+                                    Kijang
+                                </option>
+
+                                <option value="Alam Sutera">
+                                    Alam Sutera
+                                </option>
+
+                                <option value="Bekasi">
+                                    Bekasi
+                                </option>
+
+                                <option value="Bandung">
+                                    Bandung
+                                </option>
+
+                                <option value="Malang">
+                                    Malang
+                                </option>
+
+                                <option value="Semarang">
+                                    Semarang
+                                </option>
+
+                                <option value="Medan">
+                                    Medan
+                                </option>
+                            </select>
                         </div>
 
 
@@ -195,7 +228,7 @@
             {{-- =========================================
                  PILIH SOUVENIR
                  ========================================= --}}
-            <div class="card modern-card flex-grow-1 d-flex flex-column">
+            <div class="card modern-card d-flex flex-column">
 
                 <div class="card-body d-flex flex-column">
 
@@ -298,7 +331,7 @@
              ========================================= --}}
         <div class="col-lg-7 col-md-12 mb-4 d-flex flex-column">
 
-            <div class="card modern-card flex-grow-1 d-flex flex-column">
+            <div class="card modern-card d-flex flex-column">
 
                 <div class="card-body d-flex flex-column">
 
@@ -368,8 +401,198 @@
 
 </div>
 
+{{-- Update start 31/08/2026 --}}
+{{-- =========================================
+     DAFTAR PESERTA EVENT
 
+     SEMENTARA DISEMBUNYIKAN
+     Jangan hapus kode karena kemungkinan
+     akan digunakan kembali.
+========================================= --}}
+<div id="participant-list-section"
+     class="card modern-card mt-2 mb-4"
+     style="display: none;">
 
+    <div class="card-body">
+
+        <h5 class="card-title font-weight-bold mb-3">
+
+            <i class="fas fa-users text-primary mr-2"></i>
+            Daftar Peserta
+
+        </h5>
+
+        <div class="table-responsive">
+
+            {{-- update start 31/08/2026: Added DataTable for participant list --}}
+            {{-- KONTROL TABEL --}}
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <span class="mr-2">Tampilkan</span>
+
+                        <select
+                            id="participant-length"
+                            class="form-control form-control-sm"
+                            style="width: 75px;">
+
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+
+                        </select>
+
+                        <span class="ml-2">data</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <label for="participant-search" class="mb-0 mr-2">
+                            Cari:
+                        </label>
+
+                        <input
+                            type="text"
+                            id="participant-search"
+                            class="form-control form-control-sm"
+                            placeholder="Cari peserta..."
+                            style="width: 250px;">
+                    </div>
+
+                </div>
+            {{-- update end 31/08/2026: Added DataTable for participant list --}}
+
+            <table
+                id="participant-table"
+                class="table table-bordered table-striped table-hover"
+                width="100%">
+
+                <thead class="thead-light">
+
+                    <tr>
+
+                        <th>No</th>
+
+                        <th>Participant ID</th>
+
+                        <th>Nama</th>
+
+                        <th>Campus</th>
+
+                        <th>Jenis</th>
+
+                        <th>Sumber</th>
+
+                        <th>Status Souvenir</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach($participants as $participant)
+
+                    <tr data-participant-id="{{ $participant->id }}">
+
+                        <td></td>
+
+                            <td>
+                                {{ $participant->participant_code ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $participant->name }}
+                            </td>
+
+                            <td>
+                                {{ $participant->campus ?? '-' }}
+                            </td>
+
+                            <td>
+
+                                @if($participant->participant_type === 'Dosen')
+
+                                    <span class="badge badge-primary">
+                                        Dosen
+                                    </span>
+
+                                @elseif($participant->participant_type === 'Staff')
+
+                                    <span class="badge badge-success">
+                                        Staff
+                                    </span>
+
+                                @elseif($participant->participant_type === 'Mahasiswa')
+
+                                    <span class="badge badge-warning">
+                                        Mahasiswa
+                                    </span>
+
+                                @else
+
+                                    <span class="badge badge-secondary">
+                                        Guest
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                @if($participant->is_manual)
+
+                                    <span class="badge badge-info">
+                                        Manual
+                                    </span>
+
+                                @else
+
+                                    <span class="badge badge-secondary">
+                                        Import
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                @if($participant->souvenir_status)
+
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i>
+                                        Sudah Ambil
+                                    </span>
+
+                                @else
+
+                                    <span class="badge badge-warning">
+                                        <i class="fas fa-clock"></i>
+                                        Belum Ambil
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+{{-- Update end 31/08/2026 --}}
 <style>
 
 /* =========================================
@@ -664,6 +887,26 @@ aside {
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
+}
+
+.participant-campus-select {
+    font-size: 15px;
+    color: #3a3b45;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 25px;
+    box-shadow: none;
+}
+
+.participant-campus-select:focus {
+    border-color: #4e73df;
+    box-shadow: none;
+}
+
+.participant-campus-select option {
+    color: #3a3b45;
 }
 
 </style>
@@ -1053,11 +1296,11 @@ function searchParticipant() {
 
 
         // TAMPILKAN KAMPUS
+        const campusSelect =
+            document.getElementById('participant-campus');
 
-        document.getElementById(
-            'participant-campus'
-        ).textContent =
-            participant.campus || '-';
+        campusSelect.value =
+            participant.campus || '';
 
 
         // TAMPILKAN EMAIL
@@ -1119,7 +1362,44 @@ function searchParticipant() {
 
 }
 
+// =========================================
+// UPDATE STATUS SOUVENIR DI DATATABLE
+// =========================================
 
+function updateParticipantStatus(participantId) {
+
+    const table = $('#participant-table').DataTable();
+
+    table.rows().every(function () {
+
+        const rowNode = this.node();
+
+        if (!rowNode) {
+            return;
+        }
+
+        const rowParticipantId =
+            rowNode.getAttribute('data-participant-id');
+
+        if (String(rowParticipantId) === String(participantId)) {
+
+            const statusHtml = `
+                <span class="badge badge-success">
+                    <i class="fas fa-check-circle"></i>
+                    Sudah Ambil
+                </span>
+            `;
+
+            // Kolom Status Souvenir = kolom ke-7
+            // index DataTable dimulai dari 0
+            this.cell(rowNode, 6).data(statusHtml);
+
+            // Refresh tampilan tanpa reload halaman
+            table.draw(false);
+        }
+
+    });
+}
 
 // =========================================
 // SERAHKAN SOUVENIR
@@ -1151,6 +1431,10 @@ function submitSouvenir() {
             'participant-id'
         ).value;
 
+    const campus =
+    document.getElementById(
+        'participant-campus'
+    ).value;
 
     if (!participantId) {
 
@@ -1264,57 +1548,40 @@ function submitSouvenir() {
 
 
     formData.append(
-
         'name',
-
         document.getElementById(
             'participant-name'
         ).textContent
-
     );
 
 
     formData.append(
-
         'participant_code',
-
         document.getElementById(
             'participant-code'
         ).textContent
-
     );
 
 
     formData.append(
-
         'campus',
-
-        document.getElementById(
-            'participant-campus'
-        ).textContent
-
+        campus
     );
 
 
     formData.append(
-
         'email',
-
         document.getElementById(
             'participant-email'
         ).textContent
-
     );
 
 
     formData.append(
-
         'event_id',
-
         document.getElementById(
             'event-id'
         ).value
-
     );
 
 
@@ -1372,49 +1639,47 @@ function submitSouvenir() {
 
     .then(function(response) {
 
-        console.log(
+    console.log(
+        'Submit response:',
+        response
+    );
 
-            'Submit response:',
+    if (!response.success) {
 
-            response
-
+        throw new Error(
+            response.message ||
+            'Terjadi kesalahan.'
         );
+    }
 
 
-        if (!response.success) {
+    // =========================================
+    // UPDATE STATUS DI DATATABLE
+    // =========================================
 
-            throw new Error(
-
-                response.message ||
-
-                'Terjadi kesalahan.'
-
-            );
-
-        }
+    updateParticipantStatus(participantId);
 
 
-        Swal.fire({
+    Swal.fire({
 
-            icon: 'success',
+        icon: 'success',
 
-            title: 'Berhasil',
+        title: 'Berhasil',
 
-            text: response.message,
+        text: response.message,
 
-            timer: 1500,
+        timer: 1500,
 
-            showConfirmButton: false
+        showConfirmButton: false
 
-        });
-
-
-        resetForm();
+    });
 
 
-        loadSouvenir();
+    resetForm();
 
-    })
+    loadSouvenir();
+
+})
 
 
     .catch(function(error) {
@@ -1480,7 +1745,7 @@ function resetInfoPeserta() {
 
     document.getElementById(
         'participant-campus'
-    ).textContent = '-';
+    ).value = '';
 
 
     document.getElementById(
@@ -1728,6 +1993,116 @@ document.addEventListener(
 
 );
 
+// Update start 31/08/2026: Added DataTable for participant list
+// =========================================
+// DATATABLE DAFTAR PESERTA
+// =========================================
+
+@push('scripts')
+
+<script>
+
+$(document).ready(function () {
+
+    const table = $('#participant-table').DataTable({
+
+        pageLength: 10,
+
+        dom: 'rtip',
+
+        ordering: true,
+
+        searching: true,
+
+        info: true,
+
+        paging: true,
+
+        language: {
+
+            zeroRecords: "Data peserta tidak ditemukan.",
+
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+
+            infoEmpty: "Tidak ada data peserta",
+
+            infoFiltered: "(difilter dari _MAX_ total data)",
+
+            paginate: {
+                previous: "Sebelumnya",
+                next: "Berikutnya"
+            }
+
+        },
+
+        columnDefs: [
+
+            {
+                targets: 0,
+                orderable: false,
+                searchable: false
+            }
+
+        ],
+
+        order: [
+            [2, 'asc']
+        ],
+
+        drawCallback: function () {
+
+            const api = this.api();
+
+            const start = api.page.info().start;
+
+            api
+                .column(0, {
+                    page: 'current'
+                })
+                .nodes()
+                .each(function (cell, i) {
+
+                    cell.innerHTML = start + i + 1;
+
+                });
+
+        }
+
+    });
+
+
+    // =========================================
+    // JUMLAH DATA
+    // =========================================
+
+    $('#participant-length').on('change', function () {
+
+        table
+            .page
+            .len(parseInt(this.value))
+            .draw();
+
+    });
+
+
+    // =========================================
+    // PENCARIAN
+    // =========================================
+
+    $('#participant-search').on('keyup', function () {
+
+        table
+            .search(this.value)
+            .draw();
+
+    });
+
+});
+
+</script>
+
+@endpush
+// Update end 31/08/2026: Added DataTable for participant list
 </script>
 
 @endsection

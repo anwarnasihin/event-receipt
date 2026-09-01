@@ -1,0 +1,17 @@
+Mail::raw('Ini adalah email percobaan dari project event-receipt menggunakan SMTP Microsoft 365.', function ($message) {
+    $message->to('rafly.fadillah@binus.edu');
+    $message->subject('Test SMTP Event Receipt');
+});
+
+MAIL_MAILER=smtp
+MAIL_SCHEME=null
+MAIL_HOST=smtp.office365.com
+MAIL_PORT=587
+MAIL_USERNAME=lsc.bekasi@binus.edu
+MAIL_PASSWORD=Bek@si1234
+MAIL_FROM_ADDRESS="lsc.bekasi@binus.edu"
+MAIL_FROM_NAME="LSC Bekasi"
+
+
+
+Adapun souvenir ini sudah saya terima dengan baik.

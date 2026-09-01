@@ -253,29 +253,12 @@
 
                                 <div class="d-flex align-items-center">
 
-
-                                    @if($items->count() == 1)
-
-                                        <input
-                                            type="hidden"
-                                            name="items[]"
-                                            value="{{ $item->id }}">
-
-                                        <i
-                                            class="fas fa-check-circle text-success fa-lg mr-3">
-                                        </i>
-
-                                    @else
-
-                                        <input
-                                            type="checkbox"
-                                            name="items[]"
-                                            value="{{ $item->id }}"
-                                            id="item{{ $item->id }}"
-                                            class="mr-3 custom-control-input-modern">
-
-                                    @endif
-
+                                    <input
+                                        type="checkbox"
+                                        name="items[]"
+                                        value="{{ $item->id }}"
+                                        id="item{{ $item->id }}"
+                                        class="mr-3 custom-control-input-modern">
 
                                     <span class="font-weight-bold">
 
@@ -283,9 +266,7 @@
 
                                     </span>
 
-
                                 </div>
-
 
                                 <span class="badge badge-light text-muted">
 
@@ -293,9 +274,7 @@
 
                                 </span>
 
-
                             </label>
-
 
                         @empty
 
@@ -1447,6 +1426,26 @@ function submitSouvenir() {
             'warning'
 
         );
+
+        return;
+
+    }
+
+    // =========================================
+    // CEK BASE KAMPUS
+    // =========================================
+
+    if (!campus) {
+
+        Swal.fire(
+            'Gagal',
+            'Base Kampus Dosen Belum di pilih',
+            'error'
+        );
+
+        document.getElementById(
+            'participant-campus'
+        ).focus();
 
         return;
 

@@ -1438,9 +1438,9 @@ function submitSouvenir() {
     if (!campus) {
 
         Swal.fire(
-            'Gagal',
+            'Perhatian',
             'Base Kampus Dosen Belum di pilih',
-            'error'
+            'warning'
         );
 
         document.getElementById(
@@ -1448,7 +1448,6 @@ function submitSouvenir() {
         ).focus();
 
         return;
-
     }
 
 

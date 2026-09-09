@@ -1612,7 +1612,7 @@ function submitSouvenir() {
     // KIRIM KE SERVER
 
     fetch(
-    "{{ route('receipt.store') }}",
+    "{{ route('receipt.store', $event->id) }}",
     {
         method: 'POST',
 

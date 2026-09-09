@@ -79,7 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/receipt',[ParticipantReceiptController::class, 'index'])->name('receipt.index');
     Route::get('/receipt/{event}',[ParticipantReceiptController::class, 'show'])->name('receipt.show');
     Route::get('/receipt/{event}/search',[ParticipantReceiptController::class, 'search'])->name('receipt.search');
-    Route::post('/receipt/store',[ParticipantReceiptController::class, 'store'])->name('receipt.store');
+    Route::post('/receipt/{event}/store', [ParticipantReceiptController::class, 'store'])->name('receipt.store');
     Route::get('/receipt/{event}/items', [ParticipantReceiptController::class, 'items'])->name('receipt.items');
     // PDF tanda terima souvenir
     Route::get('/receipt/{receipt}/pdf',[ParticipantReceiptController::class, 'pdf'])->name('receipt.pdf');

@@ -45,35 +45,42 @@ class ParticipantReceiptController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-    'participant_id' => 'required|exists:event_participants,id',
-    'name' => 'required|string|max:255',
-    'participant_code' => 'required|string|max:255',
-    'campus' => [
-    'required',
-    'string',
-    'max:255',
-    Rule::notIn(['-']),
-    ],
-    'email' => 'required|email|max:255',
-    'phone' => 'nullable|string|max:50',
-    'items' => 'required|array|min:1',
-    'items.*' => 'exists:event_items,id',
-    'photo' => 'required|string',
-    ]);
+    public function store(Request $request, Event $event)
+    {
+        if (!$event->status) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event sudah tidak aktif dan tidak dapat digunakan.'
+            ], 422);
+        }
 
-    if ($validator->fails()) {
+        $validator = Validator::make($request->all(), [
+        'participant_id' => 'required|exists:event_participants,id',
+        'name' => 'required|string|max:255',
+        'participant_code' => 'required|string|max:255',
+        'campus' => [
+        'required',
+        'string',
+        'max:255',
+        Rule::notIn(['-']),
+        ],
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:50',
+        'items' => 'required|array|min:1',
+        'items.*' => 'exists:event_items,id',
+        'photo' => 'required|string',
+        ]);
 
-    $errors = $validator->errors()->all();
+        if ($validator->fails()) {
 
-    return response()->json([
-        'success' => false,
-        'message' => implode(' | ', $errors),
-        'errors' => $validator->errors(),
-    ], 422);
-}
+        $errors = $validator->errors()->all();
+
+        return response()->json([
+            'success' => false,
+            'message' => implode(' | ', $errors),
+            'errors' => $validator->errors(),
+        ], 422);
+    }
 
     $agent = new Agent();
 
@@ -81,9 +88,7 @@ class ParticipantReceiptController extends Controller
 
     try {
 
-        $participant = EventParticipant::findOrFail(
-            $request->participant_id
-        );
+        $participant = EventParticipant::where('id', $request->participant_id)->where('event_id', $event->id)->firstOrFail();
 
         if ($participant->souvenir_status) {
             DB::rollBack();
@@ -142,7 +147,7 @@ class ParticipantReceiptController extends Controller
 
         foreach ($request->items as $itemId) {
 
-            $item = EventItem::findOrFail($itemId);
+            $item = EventItem::where('id', $itemId)->where('event_id', $event->id)->firstOrFail();
 
             if ($item->qty <= 0) {
                 throw new \Exception(
@@ -215,13 +220,19 @@ class ParticipantReceiptController extends Controller
     // start update 31/08/2026
     public function show(Event $event)
     {
+        // Event nonaktif tidak boleh digunakan
+        if (!$event->status) {
+            return redirect()
+                ->route('receipt.index')
+                ->with('error', 'Event sudah tidak aktif dan tidak dapat digunakan.');
+        }
+
         $items = EventItem::where('event_id', $event->id)
             ->where('active', 1)
             ->where('qty', '>', 0)
             ->orderBy('name')
             ->get();
 
-        // Ambil semua peserta pada event ini
         $participants = EventParticipant::where('event_id', $event->id)
             ->with([
                 'receipts' => function ($query) {

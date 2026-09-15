@@ -68,7 +68,7 @@
             </div>
             <!-- Tabel Data -->
             <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped mb-0">
+                <table id="reportTable" class="table table-bordered table-hover table-striped mb-0">
                     <thead class="thead-light text-center">
                         <tr>
                             <th width="50">No</th>
@@ -88,7 +88,9 @@
                     <tbody>
                     @forelse($receipts as $receipt)
                         <tr>
-                            <td class="text-center">{{ $loop->iteration + (($receipts->currentPage()-1) * $receipts->perPage()) }}</td>
+                            <td class="text-center">
+                                {{ $loop->iteration }}
+                            </td>
                             <td>{{ optional($receipt->participant)->participant_code }}</td>
                             <td>{{ optional(optional($receipt->participant)->event)->name ?? '-' }}</td>
                             <td>{{ optional($receipt->participant)->name }}</td>
@@ -170,10 +172,7 @@
             </div>
 
             <!-- Pagination dengan Bootstrap Style -->
-            <div class="mt-4 d-flex justify-content-center">
-                {{-- Menambahkan view bootstrap dan appends query agar filter tidak hilang saat pindah page --}}
-                {{ $receipts->appends(request()->query())->links('pagination::bootstrap-4') }}
-            </div>
+
         </div>
     </div>
 </div>
@@ -284,20 +283,134 @@
 @push('scripts')
 <script>
 $(document).ready(function(){
+
+    // =========================================================
+    // DATATABLES LAPORAN
+    // =========================================================
+
+    let reportTable = $('#reportTable').DataTable({
+
+        // Jumlah data awal
+        pageLength: 10,
+
+        // Pilihan dropdown
+        lengthMenu: [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100]
+        ],
+
+        searching: true,
+        ordering: true,
+        paging: true,
+        info: true,
+
+        language: {
+            lengthMenu: "Tampilkan _MENU_ data",
+            search: "Cari:",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data",
+            zeroRecords: "Tidak ada data yang ditemukan",
+
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+
+
+    // =========================================================
+    // CUSTOM JUMLAH DATA
+    // Bisa pilih dropdown ATAU ketik manual
+    // =========================================================
+
+    let lengthSelect = $('#reportTable_wrapper .dataTables_length select');
+
+    if (lengthSelect.length) {
+
+        // Ganti select bawaan DataTables
+        lengthSelect.replaceWith(`
+            <input
+                type="number"
+                id="customPageLength"
+                class="form-control form-control-sm d-inline-block"
+                value="10"
+                min="1"
+                style="width:60px; margin:0 5px;"
+                list="pageLengthOptions"
+                title="Ketik jumlah data atau pilih pilihan yang tersedia"
+            >
+
+            <datalist id="pageLengthOptions">
+                <option value="10">
+                <option value="25">
+                <option value="50">
+                <option value="100">
+            </datalist>
+        `);
+    }
+
+
+    // =========================================================
+    // UBAH JUMLAH DATA
+    // =========================================================
+
+    $('#customPageLength').on('change keydown', function(e) {
+
+        // Jalankan ketika:
+        // 1. Memilih dari dropdown
+        // 2. Tekan Enter setelah mengetik
+        if (
+            e.type === 'change' ||
+            (e.type === 'keydown' && e.key === 'Enter')
+        ) {
+
+            let value = parseInt($(this).val());
+
+            // Jika bukan angka atau kurang dari 1
+            if (isNaN(value) || value < 1) {
+                value = 10;
+                $(this).val(value);
+            }
+
+            // Ubah jumlah data DataTables
+            reportTable.page.len(value).draw();
+        }
+    });
+
+
+    // =========================================================
+    // PREVIEW FOTO
+    // =========================================================
+
     $('.btn-photo').click(function(){
+
         let photo = $(this).data('photo');
+
         $('#preview-photo').attr('src', photo);
+
         $('#photoModal').modal('show');
     });
-        $('.btn-device').click(function(){
+
+
+    // =========================================================
+    // INFORMASI DEVICE
+    // =========================================================
+
+    $('.btn-device').click(function(){
+
         $('#device-user').text($(this).data('user'));
         $('#device-ip').text($(this).data('ip'));
         $('#device-browser').text($(this).data('browser'));
         $('#device-os').text($(this).data('os'));
         $('#device-agent').text($(this).data('agent'));
         $('#device-date').text($(this).data('date'));
+
         $('#deviceModal').modal('show');
     });
+
 });
 </script>
 @endpush

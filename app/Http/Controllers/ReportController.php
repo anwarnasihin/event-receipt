@@ -39,9 +39,8 @@ class ReportController extends Controller
         }
 
         $receipts = $query
-            ->latest('received_at')
-            ->paginate(10)
-            ->withQueryString();
+        ->latest('received_at')
+        ->get();
 
         return view('reports.index', compact(
             'events',
